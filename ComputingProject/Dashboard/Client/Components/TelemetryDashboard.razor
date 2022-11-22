@@ -1,0 +1,15 @@
+﻿@using Microsoft.Fast.Components.FluentUI
+@inject HttpClient Http
+
+<fluent-card class="main-page">
+    <p class="test">@data</p>
+</fluent-card>
+
+@code {
+    private string data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        data = await Http.GetFromJsonAsync<string>("TelemetryData");
+    }
+}
