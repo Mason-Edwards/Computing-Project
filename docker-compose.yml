@@ -48,28 +48,18 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_CREATE_TOPICS: "TelemetryData:5:1"
-  telegraf:
-    image: telegraf
-    container_name: telegraf
-    volumes:
-      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+  schema-registry:
+    image: confluentinc/cp-schema-registry
+    hostname: schema-registry
+    container_name: schema-registry
     depends_on:
-      - influxdb
-      - kafka
-      - grafana
       - zookeeper
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://kafka:9093" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-  grafana:
-    image: grafana/grafana
+      - kafka
     ports:
-      - "3000:3000"
-    expose:
-      - 3000
-    container_name: grafana
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
 
 volumes:
   influxdbv1:

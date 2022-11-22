@@ -1,0 +1,10 @@
+﻿.main-page {
+    --card-width: 70%;
+    --card-height: 800px;
+    margin-left: 15%;
+    margin-top: 2%
+}
+
+p {
+    color:red;
+}
