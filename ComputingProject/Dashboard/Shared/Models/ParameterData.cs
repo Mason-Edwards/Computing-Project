@@ -24,6 +24,5 @@
         /// Value of the data point.
         /// </summary>
         public string? Value { get; set; }
-
     }
 }
