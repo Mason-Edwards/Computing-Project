@@ -24,7 +24,82 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/@fluentui/web-components/dist/web-components.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script> 
+        var chart;
+
+        function addData(parameter, value) {
+            chart.data.datasets.forEach((dataset) => {
+                if (dataset.label === parameter) {
+                    var values = {
+                        x: value.timestamp,
+                        y: value.value
+                    }
+                    dataset.data.push(values);
+                }
+            });
+            chart.update();
+        }
+
+        // Being able to set "data" will be useful for historic analysis mode.
+        function addNewParameter(parameter) {
+            var parsedParameter = JSON.parse(parameter);
+            var newParameter = {
+                "label": parsedParameter.Label,
+                "data": [],
+                "borderWidth": parsedParameter.BorderWidth,
+                "borderColor": parsedParameter.BorderColor,
+                "backgroundColor": parsedParameter.BackgroundColor
+            }
+            chart.data.datasets.push(newParameter);
+            chart.update();
+        }
+
+        // Scrolls the live feed automatically.
+        function scroll() {
+            var now = Date.now();
+            // Time is in unix time in milliseconds, so this is setting the chart to the last 10 seconds.
+            // Load and plot data in realtime, but display a second late to try help it look smoother.
+            chart.config.options.scales.x.min = now - 1000 * 10;
+            chart.config.options.scales.x.max = now - 1000;
+        }
+
+        function DisplayChart() {
+            const ctx = document.getElementById('TelemetryChart');
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'second'
+                            },
+                            displayFormats: {
+                                seconds: 'HH:mm:ss.sss'
+                            }
+                        },
+                        y: {
+                            beginAtZero: false,
+                            min: -500,  
+                            max: 500
+                        }
+                    }
+                }
+            });
+            chart.options.animation = false;
+            // Start scrolling the live feed.
+            setInterval(scroll, 50);
+        }
+    </script>
 </body>
 
 </html>
