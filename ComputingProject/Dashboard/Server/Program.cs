@@ -1,4 +1,6 @@
 using Dashboard.Shared;
+using dashboardGrpcClient;
+using Grpc.Net.Client.Web;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.ResponseCompression;
 
@@ -8,6 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services
+    .AddGrpcClient<Greeter.GreeterClient>(options =>
+    {
+        options.Address = new Uri("https://localhost:7041");
+    })
+    .ConfigurePrimaryHttpMessageHandler(
+        () => new GrpcWebHandler(new HttpClientHandler()));
 
 
 var app = builder.Build();

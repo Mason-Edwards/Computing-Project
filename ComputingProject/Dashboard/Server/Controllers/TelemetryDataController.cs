@@ -1,4 +1,5 @@
-using Dashboard.Shared;
+// gRPC client namespace is defined in the proto file
+using dashboardGrpcClient;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -10,16 +11,19 @@ namespace Dashboard.Server.Controllers
     {
 
         private readonly ILogger<TelemetryDataController> _logger;
+        private readonly Greeter.GreeterClient _client;
 
-        public TelemetryDataController(ILogger<TelemetryDataController> logger)
+        public TelemetryDataController(ILogger<TelemetryDataController> logger, Greeter.GreeterClient client)
         {
             _logger = logger;
+            _client = client;
         }
 
         [HttpGet]
         public string Get()
         {
-            return JsonSerializer.Serialize("TEST"); ;
+            var test = _client.SayHello(new HelloRequest { Name = "gRPC test." });
+            return JsonSerializer.Serialize(test.Message);
         }
     }
 }
