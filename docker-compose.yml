@@ -27,27 +27,84 @@ services:
     ports:
       - "2181:2181"
     container_name: zookeeper
+  #kafka:
+  #  image: wurstmeister/kafka
+  #  depends_on:
+  #    - zookeeper
+  #  ports:
+  #    - "9092:9092"
+  #    - "9094:9094"
+  #  expose:
+  #    - "9093"
+  #  container_name: kafka
+  #  environment:
+  #    KAFKA_BROKER_ID: 1
+  #    KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #    # Where the kafka brokers listen to.
+  #    KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092,EXTERNAL://0.0.0.0:9094
+  #    # The hostname and port of the kafka broker that will be advertised to producers and consumers.
+  #    # INSIDE will be advertising to other docker images, OUTSIDE will be advertising to programs on the local machine,
+  #    # and EXTERNAL will be advertising to programs that are not on the local machine, therefore, is advertising its own IP address.
+  #    # For EXTERNAL listener my laptop has command to set "SERVER_IP" env variable in bashrc.
+  #    # TODO External with SERVER_IP doesnt work on windows.
+  #    KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092,EXTERNAL://192.168.1.77:9094
+  #    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT,EXTERNAL:PLAINTEXT
+  #    KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+  #    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #    KAFKA_CREATE_TOPICS: "TelemetryData:5:1"
+
   kafka:
-    image: wurstmeister/kafka
+    image: confluentinc/cp-server:7.2.1
+    hostname: kafka
+    container_name: kafka
     depends_on:
       - zookeeper
     ports:
       - "9092:9092"
-      - "9094:9094"
-    expose:
-      - "9093"
-    container_name: kafka
+      - "9101:9101"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092,EXTERNAL://0.0.0.0:9094
       # If the consumer/producer is not on the same machine kafka is running, then the OUTSIDE listener must be the IP of the machine instead of localhost,
       # otherwise it is telling clients that they can send and consume messages from localhost which ends up pointing to the client and not the server. 
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092,EXTERNAL://192.168.0.38:9094
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092,EXTERNAL://192.168.1.77:9094
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CREATE_TOPICS: "TelemetryData:5:1"
+      KAFKA_CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_CLUSTER_LINK_METADATA_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_DURABILITY_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_TIER_METADATA_REPLICATION_FACTOR: 1
+      KAFKA_QUOTAS_TOPIC_REPLICATION_FACTOR: 1
+
+      #KAFKA_CREATE_TOPICS: "TelemetryData:5:1"
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONFLUENT_REPORTERS_TELEMETRY_AUTO_ENABLE: false
+  init-kafka:
+    image: confluentinc/cp-server:7.2.1
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server kafka:9093 --list
+
+      echo -e 'Creating kafka topics'
+      # With schema validation
+      #kafka-topics --bootstrap-server kafka:9093 --create --if-not-exists --topic TelemetryData --replication-factor 1 --partitions 1 --config confluent.value.schema.validation=true
+
+      # Without schema validation
+      kafka-topics --bootstrap-server kafka:9093 --create --if-not-exists --topic TelemetryData --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka:9093 --list
+      "
   schema-registry:
     image: confluentinc/cp-schema-registry
     hostname: schema-registry
@@ -59,7 +116,8 @@ services:
       - "8081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+      #SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka:9093"
 
 volumes:
   influxdbv1:

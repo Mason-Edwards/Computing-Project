@@ -1,4 +1,4 @@
-﻿namespace Dashboard.Shared.Models
+﻿namespace Dashboard.Client.Models
 {
     /// <summary>
     /// Class to represent a data point to be plotted on the graph.
@@ -24,5 +24,6 @@
         /// Value of the data point.
         /// </summary>
         public string? Value { get; set; }
+
     }
 }
