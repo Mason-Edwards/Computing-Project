@@ -27,6 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script> 
         var chart;
@@ -79,25 +80,24 @@
                     responsive: true,
                     scales: {
                         x: {
-                            type: 'time',
-                            time: {
-                                unit: 'second'
-                            },
-                            displayFormats: {
-                                seconds: 'HH:mm:ss.sss'
-                            }
+                            type: 'realtime'
                         },
                         y: {
                             beginAtZero: false,
                             min: -500,  
                             max: 500
                         }
-                    }
+                    },
+                    plugins: {
+                        streaming: {
+                            duration: 1000*10
+                        }
+                    },
                 }
             });
             chart.options.animation = false;
             // Start scrolling the live feed.
-            setInterval(scroll, 50);
+            // setInterval(scroll, 1);
         }
     </script>
 </body>

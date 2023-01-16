@@ -1,4 +1,5 @@
-using Microsoft.AspNetCore.ResponseCompression;
+using Dashboard.Shared.GrpcProto;
+using Grpc.Net.Client.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services
+    .AddGrpcClient<TelemetryData.TelemetryDataClient>(options =>
+    {
+        options.Address = new Uri("https://localhost:7041");
+    })
+    .ConfigurePrimaryHttpMessageHandler(
+        () => new GrpcWebHandler(new HttpClientHandler()));
+
 
 var app = builder.Build();
 

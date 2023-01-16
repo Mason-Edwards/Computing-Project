@@ -41,9 +41,9 @@
             string tyreTempValueJson = JsonSerializer.Serialize(tyreTempValue);
 
             // Need to find best value in combination with chart update interval, chart time range, etc.
-            await Task.Delay(50);
+            await Task.Delay(200);
 
-            await JSRuntime.InvokeAsync<string>("addData", steeringAngle.Label, steeringAngleValue);
+            // await JSRuntime.InvokeAsync<string>("addData", steeringAngle.Label, steeringAngleValue);
             await JSRuntime.InvokeAsync<string>("addData", tyreTemp.Label, tyreTempValue);
         }
     }
