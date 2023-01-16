@@ -1,8 +1,5 @@
-using Dashboard.Shared;
-using dashboardGrpcClient;
+using Dashboard.Shared.GrpcProto;
 using Grpc.Net.Client.Web;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 

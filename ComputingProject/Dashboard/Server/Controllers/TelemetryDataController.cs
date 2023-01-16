@@ -1,5 +1,5 @@
 // gRPC client namespace is defined in the proto file
-using dashboardGrpcClient;
+using Dashboard.Shared.GrpcProto;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 

@@ -1,4 +1,5 @@
 using Grpc.Core;
+using Dashboard.Shared.GrpcProto;
 
 namespace grpcServer.Services
 {

@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dashboard.Shared", "Dashboa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grpcServer", "grpcServer\grpcServer.csproj", "{5D54CD19-74FD-4AB2-A9E2-07F96664298F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "grpcClient", "grpcClient\grpcClient.csproj", "{B8023458-1EA9-494D-95A7-67C930F04A73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "grpcClient", "grpcClient\grpcClient.csproj", "{B8023458-1EA9-494D-95A7-67C930F04A73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
