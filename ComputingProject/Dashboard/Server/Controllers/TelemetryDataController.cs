@@ -11,9 +11,9 @@ namespace Dashboard.Server.Controllers
     {
 
         private readonly ILogger<TelemetryDataController> _logger;
-        private readonly Greeter.GreeterClient _client;
+        private readonly TelemetryData.TelemetryDataClient _client;
 
-        public TelemetryDataController(ILogger<TelemetryDataController> logger, Greeter.GreeterClient client)
+        public TelemetryDataController(ILogger<TelemetryDataController> logger, TelemetryData.TelemetryDataClient client)
         {
             _logger = logger;
             _client = client;

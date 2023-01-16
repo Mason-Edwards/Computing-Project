@@ -3,10 +3,10 @@ using Dashboard.Shared.GrpcProto;
 
 namespace grpcServer.Services
 {
-    public class GreeterService : Greeter.GreeterBase
+    public class TelemetryDataService : TelemetryData.TelemetryDataBase
     {
-        private readonly ILogger<GreeterService> _logger;
-        public GreeterService(ILogger<GreeterService> logger)
+        private readonly ILogger<TelemetryDataService> _logger;
+        public TelemetryDataService(ILogger<TelemetryDataService> logger)
         {
             _logger = logger;
         }

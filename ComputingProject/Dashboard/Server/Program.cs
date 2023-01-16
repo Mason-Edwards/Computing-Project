@@ -9,7 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 builder.Services
-    .AddGrpcClient<Greeter.GreeterClient>(options =>
+    .AddGrpcClient<TelemetryData.TelemetryDataClient>(options =>
     {
         options.Address = new Uri("https://localhost:7041");
     })

@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\Dashboard\Shared\Protos\greet.proto" GrpcServices="Both" />
+    <Protobuf Include="..\Dashboard\Shared\Protos\TelemetryData.proto" GrpcServices="Both" />
   </ItemGroup>
 
 </Project>

@@ -23,7 +23,7 @@ namespace grpcServer
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcService<GreeterService>().EnableGrpcWeb();
+                endpoints.MapGrpcService<TelemetryDataService>().EnableGrpcWeb();
             });
 
             app.Run();
