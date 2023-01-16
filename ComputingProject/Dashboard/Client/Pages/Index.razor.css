@@ -1,0 +1,24 @@
+﻿.main-page {
+    --card-width: 70%;
+    --card-height: 800px;
+    margin-left: 15%;
+    margin-top: 2%
+}
+
+#btn-container {
+    top: 25%;
+    left: 40%;
+    position: absolute;
+}
+
+.btns {
+    width: 100px;
+    height: 50px;
+    margin-right: 40px;
+}
+
+#title {
+    left: 34%;
+    top: 10%;
+    position: absolute;
+}
