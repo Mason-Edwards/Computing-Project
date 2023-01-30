@@ -1,8 +1,8 @@
-﻿.main-page {
-    --card-width: 70%;
-    --card-height: 800px;
-    margin-left: 15%;
-    margin-top: 2%
+﻿.telemetry-chart {
+    flex: 0 0 768px;
+    margin-left: 350px;
+    margin-top: 50px;
+    margin-right: 100px;
 }
 
 p {

@@ -1,0 +1,16 @@
+﻿.button-banner {
+    flex: 0 0 1609px;
+    margin-top: 20px;
+    margin-left: 150px;
+    height: 50px;
+}
+
+.button-container {
+    padding-top: 7px;
+    padding-left: 15px;
+    display: flex;
+}
+
+.button-container > fluent-button{
+    margin-right: 15px;
+}

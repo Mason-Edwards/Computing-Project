@@ -28,8 +28,9 @@
     <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+    <script src="https://kit.fontawesome.com/28e133db25.js" crossorigin="anonymous"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
-    <script> 
+    <script>
         var chart;
 
         function addData(parameter, value) {
@@ -84,13 +85,13 @@
                         },
                         y: {
                             beginAtZero: false,
-                            min: -500,  
+                            min: -500,
                             max: 500
                         }
                     },
                     plugins: {
                         streaming: {
-                            duration: 1000*10
+                            duration: 1000 * 10
                         }
                     },
                 }
