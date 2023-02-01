@@ -32,7 +32,6 @@ using (var producer = new ProducerBuilder<Null, string>(config).Build())
 {
     for (var i = 0; i < 1000; i++)
     {
-        
         string x = Convert.ToString(new Random().Next(1, 300));
         string data = $"{{\"parameter\": \"Test parameter\", \"unit\": \"g\", \"value\": \"{x}\", \"timestamp\": \"{new Timestamp(DateTimeOffset.Now).UtcDateTime}\" }}";
 

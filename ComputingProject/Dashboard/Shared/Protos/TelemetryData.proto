@@ -9,7 +9,6 @@ package TelemetryData;
 service TelemetryData {
   // Test Method
   rpc SayHello (HelloRequest) returns (HelloReply);
-
   // Opens telemetry data stream
   rpc OpenTelemetryStream(google.protobuf.Empty) returns (stream Data);
 }
