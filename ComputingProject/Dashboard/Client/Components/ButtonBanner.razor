@@ -1,11 +1,33 @@
 ﻿<fluent-card class="button-banner">
     <div class="button-container">
-        <fluent-button appearance="outline"><i class="fa-solid fa-play" slot="start"></i>Start</fluent-button>
-        <fluent-button appearance="outline"><i class="fa-solid fa-pause" slot="start"></i>Stop</fluent-button>
-        <fluent-button appearance="outline"><i class="fa-solid fa-rotate-left" slot="start"></i>Restart</fluent-button>
+        <fluent-button appearance="outline" @onclick="StartClicked"><i class="fa-solid fa-play" slot="start"></i>Start</fluent-button>
+        <fluent-button appearance="outline" @onclick="StopClicked"><i class="fa-solid fa-pause" slot="start"></i>Stop</fluent-button>
+        <fluent-button appearance="outline" @onclick="RestartClicked"><i class="fa-solid fa-rotate-left" slot="start"></i>Restart</fluent-button>
     </div>
 </fluent-card>
 
 @code {
+    [Parameter]
+    public EventCallback OnStartClicked { get; set; }
 
+    [Parameter]
+    public EventCallback OnStopClicked { get; set; }
+
+    [Parameter]
+    public EventCallback OnRestartClicked { get; set; }
+
+    public async Task StartClicked()
+    {
+        await OnStartClicked.InvokeAsync();
+    }
+
+    public async Task StopClicked()
+    {
+        await OnStopClicked.InvokeAsync();
+    }
+
+    public async Task RestartClicked()
+    {
+        await OnRestartClicked.InvokeAsync();
+    }
 }

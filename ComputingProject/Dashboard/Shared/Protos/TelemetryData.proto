@@ -9,12 +9,7 @@ package TelemetryData;
 service TelemetryData {
   // Test Method
   rpc SayHello (HelloRequest) returns (HelloReply);
-  // Starts telemetry service
-  rpc StartTelemetry (google.protobuf.Empty) returns (Reply);
-  // Stop telemetry service
-  rpc StopTelemetry(google.protobuf.Empty) returns (Reply);
-  // Restarts telemetry service
-  rpc RestartTelemetry(google.protobuf.Empty) returns (Reply);
+
   // Opens telemetry data stream
   rpc OpenTelemetryStream(google.protobuf.Empty) returns (stream Data);
 }
@@ -35,5 +30,6 @@ message Data {
     string parameter = 1;
     string unit = 2;
     string value = 3;
+    string timestamp = 4;
 }
 

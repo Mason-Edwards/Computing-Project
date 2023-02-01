@@ -18,4 +18,8 @@
     <Protobuf Include="..\Dashboard\Shared\Protos\TelemetryData.proto" GrpcServices="Both" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Protos\" />
+  </ItemGroup>
+
 </Project>

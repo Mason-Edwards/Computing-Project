@@ -24,6 +24,8 @@ namespace Dashboard.Server.Controllers
         {
             var test = _client.SayHello(new HelloRequest { Name = "gRPC test." });
             return JsonSerializer.Serialize(test.Message);
+
+            //
         }
     }
 }

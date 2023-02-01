@@ -27,16 +27,13 @@ namespace grpcServer.Services
             'properties': {
                 'parameter': {'type':'string'},
                 'unit': {'type' : 'string'},
-                'value' : {'type' : 'string'}
+                'value' : {'type' : 'string'},
+                'timestamp' : {'type' : 'string'}
             },
-            'required' : ['parameter', 'unit', 'value'],
+            'required' : ['parameter', 'unit', 'value', 'timestamp'],
             'additionalProperties' : false
         }");
 
-
-
-        // Dont forget to dispose when its been done with.
-        // Also create own dispose metod for this service.
 
         public TelemetryDataService(ILogger<TelemetryDataService> logger)
         {
@@ -51,102 +48,37 @@ namespace grpcServer.Services
             });
         }
 
-        // Start telemetry method
-        // Check that its not running already (already subbed to topic etc)
-        public override Task<Reply> StartTelemetry(Empty empty, ServerCallContext context) 
+        public override async Task OpenTelemetryStream(Empty empty, IServerStreamWriter<Data> responseStream ,ServerCallContext context)
         {
+            using var consumer = new ConsumerBuilder<Ignore, string>(config).Build();
+            consumer.Subscribe(new List<string> { topic });
 
-            using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
+            while (!context.CancellationToken.IsCancellationRequested)
             {
-                while (!context.CancellationToken.IsCancellationRequested)
+                // Consume message
+                ConsumeResult<Ignore, string>? consumeResult = consumer.Consume();
+
+                // Convert message to JSON
+                JObject message = JObject.Parse(consumeResult.Message.Value);
+                // Validate message using JSON schema
+                bool valid = message.IsValid(schemaJson);
+
+                if (!valid)
                 {
-                    // Consume message
-                    ConsumeResult<Ignore, string>? consumeResult = consumer.Consume();
-
-                    // Convert message to JSON
-                    JObject message = JObject.Parse(consumeResult.Message.Value);
-                    // Validate message using JSON schema
-                    bool valid = message.IsValid(schemaJson);
-
-                    if (valid)
-                    {
-                        Data toSend = new Data
-                        {
-                            // Return message (boolean, gRPC status?)
-                            Parameter = message.Property("parameter").Value.ToString(),
-                            Unit = message.Property("unit").Value.ToString(),
-                            Value = message.Property("value").Value.ToString()
-                        };
-
-                        responseStream.WriteAsync(toSend);
-                    }
-
-                    responseStream.WriteAsync(new Data { Value = "data not valid" });
-
+                    await responseStream.WriteAsync(new Data { Value = "data not valid" });
+                    continue;
                 }
-                return Task.FromResult(new Data
+
+                Data toSend = new Data
                 {
-                    Value = "end of stream"
-                });
-            }
-        }
-        // Restart method
-        public override Task<Reply> RestartTelemetry(Empty empty, ServerCallContext context)
-        {
-            return Task.FromResult(new Reply
-            {
-                // Return message (boolean, gRPC status?)
-                Message = "test"
-            });
-        }
-        // Stop method
-        public override Task<Reply> StopTelemetry(Empty empty, ServerCallContext context)
-        {
-            return Task.FromResult(new Reply
-            {
-                // Return message (boolean, gRPC status?)
-                Message = "test"
-            });
-        }
+                    // Return message (boolean, gRPC status?)
+                    Parameter = message.Property("parameter").Value.ToString(),
+                    Unit = message.Property("unit").Value.ToString(),
+                    Value = message.Property("value").Value.ToString(),
+                    Timestamp = message.Property("timestamp").Value.ToString()
+                };
 
-        // Get data 
-        public override Task<Data> OpenTelemetryStream(Empty empty, IServerStreamWriter<Data> responseStream ,ServerCallContext context)
-        {
-
-            using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
-            {
-                consumer.Subscribe(new List<string> { topic });
-
-                while (!context.CancellationToken.IsCancellationRequested)
-                {
-                    // Consume message
-                    ConsumeResult<Ignore, string>? consumeResult = consumer.Consume();
-
-                    // Convert message to JSON
-                    JObject message = JObject.Parse(consumeResult.Message.Value);
-                    // Validate message using JSON schema
-                    bool valid = message.IsValid(schemaJson);
-
-                    if (valid)
-                    {
-                        Data toSend = new Data
-                        {
-                            // Return message (boolean, gRPC status?)
-                            Parameter = message.Property("parameter").Value.ToString(),
-                            Unit = message.Property("unit").Value.ToString(),
-                            Value = message.Property("value").Value.ToString()
-                        };
-
-                        responseStream.WriteAsync(toSend);
-                    }
-
-                    responseStream.WriteAsync(new Data { Value = "data not valid" });
-
-                }
-                return Task.FromResult(new Data
-                {
-                    Value = "end of stream"
-                });
+                await responseStream.WriteAsync(toSend);
             }
         }
     }
