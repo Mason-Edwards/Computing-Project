@@ -4,6 +4,12 @@
     margin-top: 20px;
 }
 
+.empty {
+    position: relative;
+    top: 219px;
+    left: 430px;
+}
+
 p {
     color:red;
 }

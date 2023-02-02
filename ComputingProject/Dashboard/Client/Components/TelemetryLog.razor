@@ -1,13 +1,18 @@
 ﻿@using Dashboard.Shared.Models
 
 <fluent-card class="telemetry-log">
-    <h1>Telemetry Log</h1>
-    <div style="overflow-y: scroll; height:400px;">
+    @if (logs.Count == 0)
+    {
+        <h1 class="empty">Telemetry Logs empty</h1>
+    } else
+    {
+        <div style="overflow-y: scroll; height:400px;">
         <!-- Bug with the first message being lost in the scrollable div-->
         <Virtualize Items="@logs" Context="logMessage">
             <LogMessage Log="logMessage.Value"></LogMessage>
         </Virtualize>
     </div>
+    }
 </fluent-card>
 
 @code {
@@ -16,6 +21,7 @@
 
     protected override async void OnInitialized()
     {
+        /*
         // Simulate logs being added
         Parameter p = new Parameter("TEST" + "g", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
         for (var i = 0; i < 20; i++)
@@ -24,6 +30,7 @@
             StateHasChanged();
             await Task.Delay(500);
         }
+        */
     }
 
     public void addLog(Parameter parameter, string logMessage, DateTimeOffset timestamp)
