@@ -17,12 +17,14 @@
     <ButtonBanner OnStartClicked="StartClicked" OnStopClicked="StopClicked"/>
     <TelemetryDashboard />
     <ParameterList />
-    <TelemetryLog />
+    <TelemetryLog @ref="log" />
 </div>
 
 @code {
     AsyncServerStreamingCall<Data>? stream;
     HashSet<string>? parameters = new HashSet<string>();
+
+    TelemetryLog log;
 
     // Need to clean this code. More consistent types etc. 
     // There is a bug when the stream is stopped and started again, nothing happens and it needs to be started/stopped multiple times for data to start going through
@@ -45,10 +47,20 @@
                 {
                     // gRPC server has already ensured the messages are in the right format.
                     Console.WriteLine($"Parameter: {response.Parameter} | Unit: {response.Unit} | Value: {response.Value} | Timestamp: {response.Timestamp}");
-
-
+                    
                     // Pass response to Chart Service to have it displayed.
                     Parameter p = new Parameter(response.Parameter + response.Unit, 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
+                    DateTimeOffset time = DateTimeOffset.Parse(response.Timestamp);
+                    ParameterData pd = new ParameterData(response.Value, time.ToUnixTimeMilliseconds());
+
+                    // Handle if its a log message
+                    if (response.Unit.Equals("log"))
+                    {
+                        
+                        continue;
+                    }
+
+                    
                     // Checking label isnt the best but itll work. Having a HashSet<Parameter> doesnt work with contains as it seems like its checking object references
                     // insead of the members of the object.
                     if (!parameters.Contains(p.Label))
@@ -56,9 +68,6 @@
                         parameters.Add(p.Label);
                         await ChartService.AddParameter(JsonSerializer.Serialize(p), JsRuntime);
                     }
-
-                    DateTimeOffset time = DateTimeOffset.Parse(response.Timestamp);
-                    ParameterData pd = new ParameterData(response.Value, time.ToUnixTimeMilliseconds());
 
                     // Unlike Parameter, ParameterData doesnt need to be serialised before its passsed into the JS function. This should be more consistent.
                     await ChartService.AddParameterData(p.Label ,pd, JsRuntime);

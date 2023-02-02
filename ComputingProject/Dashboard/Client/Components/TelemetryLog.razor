@@ -1,7 +1,33 @@
-﻿<fluent-card class="telemetry-log">
+﻿@using Dashboard.Shared.Models
+
+<fluent-card class="telemetry-log">
     <h1>Telemetry Log</h1>
+    <div style="overflow-y: scroll; height:400px;">
+        <!-- Bug with the first message being lost in the scrollable div-->
+        <Virtualize Items="@logs" Context="logMessage">
+            <LogMessage Log="logMessage.Value"></LogMessage>
+        </Virtualize>
+    </div>
 </fluent-card>
 
 @code {
+    static Comparer<DateTimeOffset> descendingComparer = Comparer<DateTimeOffset>.Create((x, y) => y.CompareTo(x));
+    SortedList<DateTimeOffset, Log> logs = new SortedList<DateTimeOffset, Log>(descendingComparer);
 
+    protected override async void OnInitialized()
+    {
+        // Simulate logs being added
+        Parameter p = new Parameter("TEST" + "g", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
+        for (var i = 0; i < 20; i++)
+        {
+            logs.Add(DateTimeOffset.Now.ToLocalTime(), new Log(p, $"This is a telemetry log message, DEVICE FAILED... {i}", DateTimeOffset.Now.ToLocalTime()));
+            StateHasChanged();
+            await Task.Delay(500);
+        }
+    }
+
+    public void addLog(Parameter parameter, string logMessage, DateTimeOffset timestamp)
+    {
+
+    }
 }
