@@ -10,10 +10,42 @@
 </fluent-card>
 
 @code {
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Have to invoke the javascript function after the component has been rendered,
         // otherwise the function is called before the DOM element is ready.
         await JSRuntime.InvokeAsync<string>("DisplayChart");
+    }
+
+    public async Task AddFakeDataPoints()
+    {
+        // Add parameters to chart
+        Parameter steeringAngle = new Parameter("Steering Angle (Deg)", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
+        string steeringAngleJson = JsonSerializer.Serialize(steeringAngle);
+
+        await JSRuntime.InvokeAsync<string>("addNewParameter", steeringAngleJson);
+
+        // Simulate getting data and adding to chart.
+        for (int i = 0; i < 100; i++)
+        {
+            int data1 = new Random().Next(1, 100);
+
+            DateTime dateTime = DateTime.Now;
+            long unixTime = ((DateTimeOffset)dateTime).ToUnixTimeMilliseconds();
+
+            ParameterData steeringAngleValue = new ParameterData(data1.ToString(), unixTime);
+
+            string steeringAngleValueJson = JsonSerializer.Serialize(steeringAngleValue);
+
+            await Task.Delay(100);
+
+            await JSRuntime.InvokeAsync<string>("addData", steeringAngle.Label, steeringAngleValue);
+        }
+    }
+
+    public async Task ClearDataPoints()
+    {
+        await JSRuntime.InvokeAsync<string>("clearDataPoints");
     }
 }

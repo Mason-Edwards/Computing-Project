@@ -46,6 +46,11 @@
             chart.update();
         }
 
+        function clearDataPoints() {
+            chart.data = null;
+            chart.update();
+        }
+
         // Being able to set "data" will be useful for historic analysis mode.
         function addNewParameter(parameter) {
             var parsedParameter = JSON.parse(parameter);

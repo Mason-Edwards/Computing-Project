@@ -1,7 +1,91 @@
-﻿<fluent-card class="parameter-list">
+﻿@using Dashboard.Client.Enums
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
 
+@inject IWebAssemblyHostEnvironment HostEnvironment
+
+<fluent-card class="parameter-list">
+    <div class="main-container">
+        <h1 class="heading">Control Pannel</h1>
+        <fluent-divider></fluent-divider>
+        <p> Status </p>
+        <ul class="list">
+          <li>
+                @if (Connection == ConnectionStatus.Connected)
+                {
+                    <span> Connected </span>
+                }
+                else if (Connection == ConnectionStatus.Connecting)
+                {
+                    <span> Connecting </span>
+                }
+                else if (Connection == ConnectionStatus.Disconnected)
+                {
+                    <span> Disconnected </span>
+                }
+          </li>
+          <li>
+                @if (Recording == RecordingStatus.Recording)
+                {
+                    <span> Recording </span>
+                }
+                else if (Recording == RecordingStatus.NotRecoding)
+                {
+                    <span> Not Recording </span>
+                }
+          </li>
+        </ul>
+
+        <fluent-divider></fluent-divider>
+        @if(HostEnvironment.Environment == "Development")
+        {
+            <p>Dev Pannel</p>
+            <div class="dev-button-container">
+                <fluent-button class="buttons" @onclick="OnAddFakeDataPointsClicked">Add fake data points</fluent-button>
+                <fluent-button class="buttons" @onclick="OnAddFakeDataLogsClicked">Add fake data logs</fluent-button>
+                <fluent-button class="buttons" @onclick="OnClearFakeDataPointsClicked">Clear data points</fluent-button>
+                <fluent-button class="buttons" @onclick="OnClearFakeDataLogsClicked">Clear data logs</fluent-button>
+            </div>
+        }
+
+    </div>
 </fluent-card>
 
 @code {
+    [Parameter]
+    public ConnectionStatus Connection { get; set; }
 
+    [Parameter]
+    public RecordingStatus Recording { get; set; }
+
+    [Parameter]
+    public EventCallback OnAddFakeDataPoints { get; set; }
+
+    [Parameter]
+    public EventCallback OnAddFakeDataLogs { get; set; }
+
+    [Parameter]
+    public EventCallback OnClearFakeDataLogs { get; set; }
+
+    [Parameter]
+    public EventCallback OnClearFakeDataPoints { get; set; }
+
+    public async Task OnAddFakeDataPointsClicked()
+    {
+        await OnAddFakeDataPoints.InvokeAsync();
+    }
+
+    public async Task OnAddFakeDataLogsClicked()
+    {
+        await OnAddFakeDataLogs.InvokeAsync();
+    }
+
+    public async Task OnClearFakeDataLogsClicked()
+    {
+        await OnClearFakeDataLogs.InvokeAsync();
+    }
+
+    public async Task OnClearFakeDataPointsClicked()
+    {
+        await OnClearFakeDataPoints.InvokeAsync();
+    }
 }

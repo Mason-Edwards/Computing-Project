@@ -21,7 +21,16 @@
 
     protected override async void OnInitialized()
     {
-        /*
+
+    }
+
+    public void addLog(Parameter parameter, string logMessage, DateTimeOffset timestamp)
+    {
+
+    }
+
+    public async Task addFakeLogs()
+    {
         // Simulate logs being added
         Parameter p = new Parameter("TEST" + "g", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
         for (var i = 0; i < 20; i++)
@@ -30,11 +39,11 @@
             StateHasChanged();
             await Task.Delay(500);
         }
-        */
     }
 
-    public void addLog(Parameter parameter, string logMessage, DateTimeOffset timestamp)
+    public void clearLogs()
     {
-
+        logs.Clear();
+        StateHasChanged();
     }
 }
