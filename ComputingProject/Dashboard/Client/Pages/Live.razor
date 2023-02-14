@@ -1,4 +1,6 @@
 ﻿@page "/telemetrylive"
+@using Dashboard.Client.Adapters;
+@using Google.Protobuf.WellKnownTypes;
 @using Microsoft.Fast.Components.FluentUI
 @using Dashboard.Client.Components
 @using Dashboard.Shared.GrpcProto
@@ -8,10 +10,8 @@
 @using Dashboard.Shared.Models
 @using System.Text.Json;
 
-
 @inject IJSRuntime JsRuntime
 @inject TelemetryData.TelemetryDataClient TelemetryClient
-
 
 <PageTitle>Live Telemetry</PageTitle>
 <div class="telemetry-container">
@@ -47,12 +47,14 @@
     {
         try
         {
-            using (stream = TelemetryClient.OpenTelemetryStream(new Google.Protobuf.WellKnownTypes.Empty()))
+            using (stream = TelemetryClient.OpenTelemetryStream(new Empty()))
             {
                 connection = ConnectionStatus.Connecting;
+                StateHasChanged();
                 await foreach(var response in stream.ResponseStream.ReadAllAsync())
                 {
                     connection = ConnectionStatus.Connected;
+                    StateHasChanged();
                     // gRPC server has already ensured the messages are in the right format.
                     Console.WriteLine($"Parameter: {response.Parameter} | Unit: {response.Unit} | Value: {response.Value} | Timestamp: {response.Timestamp}");
 
@@ -79,6 +81,7 @@
                     // Unlike Parameter, ParameterData doesnt need to be serialised before its passsed into the JS function. This should be more consistent.
                     await ChartService.AddParameterData(p.Label ,pd, JsRuntime);
                 }
+                connection = ConnectionStatus.Disconnected;
             }
         } catch(Grpc.Core.RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
         {
@@ -94,14 +97,20 @@
         stream?.Dispose();
     }
 
-    public void StartRecordingClicked()
+    public async Task StartRecordingClicked()
     {
+        // TODO Dont allow recording if not connected
         recording = RecordingStatus.Recording;
+        // Try catch, if exception then set recording status back
+        await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
     }
 
-    public void StopRecordingClicked()
+    public async Task StopRecordingClicked()
     {
+        // TODO Dont allow recording if not connected
         recording = RecordingStatus.NotRecoding;
+        // Try catch, if exception then set recording status back
+        await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
     }
 
     public void AddFakeDataLogsClicked()

@@ -11,6 +11,7 @@ service TelemetryData {
   rpc SayHello (HelloRequest) returns (HelloReply);
   // Opens telemetry data stream
   rpc OpenTelemetryStream(google.protobuf.Empty) returns (stream Data);
+  rpc RecordTelemetry(RecordTelemetryMessage) returns (google.protobuf.Empty);
 }
 
 message HelloRequest {
@@ -32,3 +33,11 @@ message Data {
     string timestamp = 4;
 }
 
+message RecordTelemetryMessage {
+    GrpcRecordingStatus recordingStatus = 1;
+}
+
+enum GrpcRecordingStatus {
+    Recording = 0;
+    NotRecoding = 1;
+}

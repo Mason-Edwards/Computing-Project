@@ -37,3 +37,21 @@ p {
 .buttons {
     flex-basis: 150px;
 }
+
+.green {
+    color: green;
+}
+
+.amber {
+    color: darkorange;
+}
+
+.red {
+    color: red;
+}
+
+.icon {
+    font-size: 0.6em;
+    vertical-align: middle;
+    margin-right: 6px;
+}

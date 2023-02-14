@@ -1,9 +1,16 @@
 using grpcServer.Services;
+using InfluxDB.Client;
 
 namespace grpcServer
 {
     public class Program
     {
+
+        // TODO Move token to config file
+        const string url = "http://influxdb:8086";
+        const string token = "mGKNA3ucyOT2rnIuxmGYQAbnrYkBGaT0Piiotl2AFurXVbCl8ExjRok5I9IKI5f94prJziCGSezz7J_JQUGkBg==";
+        const string org = "defaultOrg";
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +20,7 @@ namespace grpcServer
 
             // Add services to the container.
             builder.Services.AddGrpc();
+            builder.Services.AddSingleton<IInfluxDBClient>(new InfluxDBClient(url, token));
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("DevCorsPolicy", builder =>

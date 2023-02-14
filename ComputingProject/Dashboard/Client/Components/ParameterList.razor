@@ -3,7 +3,9 @@
 
 @inject IWebAssemblyHostEnvironment HostEnvironment
 
+
 <fluent-card class="parameter-list">
+    <!-- THIS FILE NEEDS RENAMING -->
     <div class="main-container">
         <h1 class="heading">Control Pannel</h1>
         <fluent-divider></fluent-divider>
@@ -12,25 +14,25 @@
           <li>
                 @if (Connection == ConnectionStatus.Connected)
                 {
-                    <span> Connected </span>
+                    <span class="green"> <i class="fa-solid fa-circle green icon"></i> Connected </span>
                 }
                 else if (Connection == ConnectionStatus.Connecting)
                 {
-                    <span> Connecting </span>
+                    <span class="amber"> <i class="fa-solid fa-circle amber icon"></i>Connecting </span>
                 }
                 else if (Connection == ConnectionStatus.Disconnected)
                 {
-                    <span> Disconnected </span>
+                    <span class="red"> <i class="fa-solid fa-circle red icon"></i>Disconnected </span>
                 }
           </li>
           <li>
                 @if (Recording == RecordingStatus.Recording)
                 {
-                    <span> Recording </span>
+                    <span class="red"> <i class="fa-solid fa-circle red icon"></i>Recording </span>
                 }
                 else if (Recording == RecordingStatus.NotRecoding)
                 {
-                    <span> Not Recording </span>
+                    <span class="red"> <i class="fa-regular fa-circle red icon"></i>Not Recording </span>
                 }
           </li>
         </ul>

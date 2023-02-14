@@ -5,12 +5,15 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Google.Protobuf.WellKnownTypes;
 using static Confluent.Kafka.ConfigPropertyNames;
+using InfluxDB.Client;
 
 namespace grpcServer.Services
 {
     public class TelemetryDataService : TelemetryData.TelemetryDataBase
     {
         private readonly ILogger<TelemetryDataService> _logger;
+        private readonly IInfluxDBClient _influxDbClient;
+        private static GrpcRecordingStatus record = GrpcRecordingStatus.NotRecoding;
 
         private const string topic = "TelemetryData";
 
@@ -35,9 +38,10 @@ namespace grpcServer.Services
         }");
 
 
-        public TelemetryDataService(ILogger<TelemetryDataService> logger)
+        public TelemetryDataService(ILogger<TelemetryDataService> logger, IInfluxDBClient influxDBClient)
         {
             _logger = logger;
+            _influxDbClient = influxDBClient;
         }
 
         public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
@@ -78,8 +82,20 @@ namespace grpcServer.Services
                     Timestamp = message.Property("timestamp").Value.ToString()
                 };
 
+                if(record == GrpcRecordingStatus.Recording)
+                {
+                    Console.WriteLine($"WRITING {toSend.ToString()}");
+                }
+
                 await responseStream.WriteAsync(toSend);
             }
+        }
+
+        public override Task<Empty> RecordTelemetry(RecordTelemetryMessage recordTelemetryMessage, ServerCallContext context)
+        {
+            record = recordTelemetryMessage.RecordingStatus;
+            Console.WriteLine($"CHANGING STATUS TO {record.ToString()}");
+            return Task.FromResult(new Empty());
         }
     }
 }

@@ -105,19 +105,19 @@ services:
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server kafka:9093 --list
       "
-  schema-registry:
-    image: confluentinc/cp-schema-registry
-    hostname: schema-registry
-    container_name: schema-registry
-    depends_on:
-      - zookeeper
-      - kafka
-    ports:
-      - "8081:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      #SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka:9093"
+  #schema-registry:
+  #  image: confluentinc/cp-schema-registry
+  #  hostname: schema-registry
+  #  container_name: schema-registry
+  #  depends_on:
+  #    - zookeeper
+  #    - kafka
+  #  ports:
+  #    - "8081:8081"
+  #  environment:
+  #    SCHEMA_REGISTRY_HOST_NAME: schema-registry
+  #    #SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zookeeper:2181"
+  #    SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka:9093"
 
 volumes:
   influxdbv1:
