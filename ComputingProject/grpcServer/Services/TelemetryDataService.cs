@@ -6,6 +6,8 @@ using Newtonsoft.Json.Schema;
 using Google.Protobuf.WellKnownTypes;
 using static Confluent.Kafka.ConfigPropertyNames;
 using InfluxDB.Client;
+using InfluxDB.Client.Api.Domain;
+using InfluxDB.Client.Writes;
 
 namespace grpcServer.Services
 {
@@ -15,7 +17,10 @@ namespace grpcServer.Services
         private readonly IInfluxDBClient _influxDbClient;
         private static GrpcRecordingStatus record = GrpcRecordingStatus.NotRecoding;
 
+        // Move to a config file
         private const string topic = "TelemetryData";
+        private const string org = "defaultOrg";
+        private const string bucket = "defaultBucket";
 
         static ConsumerConfig config = new ConsumerConfig
         {
@@ -83,8 +88,33 @@ namespace grpcServer.Services
                 };
 
                 if(record == GrpcRecordingStatus.Recording)
-                {
-                    Console.WriteLine($"WRITING {toSend.ToString()}");
+                { 
+                    string x = Convert.ToString(new Random().Next(1, 300));
+                    string data = $"{{\"parameter\": \"Test parameter\", \"unit\": \"g\", \"value\": \"{x}\", \"timestamp\": \"{new Confluent.Kafka.Timestamp(DateTimeOffset.Now).UtcDateTime}\" }}";
+
+                    JObject test = JObject.Parse(data);
+
+                    Data toSendTest = new Data
+                    {
+                        // Return message (boolean, gRPC status?)
+                        Parameter = test.Property("parameter").Value.ToString(),
+                        Unit = test.Property("unit").Value.ToString(),
+                        Value = test.Property("value").Value.ToString(),
+                        Timestamp = test.Property("timestamp").Value.ToString()
+                    };
+
+                    Console.WriteLine($"WRITING TEST DATA {toSendTest.ToString()}");
+                    using var writeApi = _influxDbClient.GetWriteApi();
+
+                    // Create data point
+                    var point = PointData.Measurement(toSendTest.Parameter)
+                    .Tag("value", toSendTest.Value)
+                    .Field("unit", toSendTest.Unit)
+                    .Timestamp(DateTime.Parse(toSendTest.Timestamp), WritePrecision.Ns);
+
+                    // Write to db
+                    // Might need to be done async or something to help performance?
+                    writeApi.WritePoint(point, bucket, org);
                 }
 
                 await responseStream.WriteAsync(toSend);

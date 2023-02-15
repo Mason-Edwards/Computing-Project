@@ -7,7 +7,7 @@ namespace grpcServer
     {
 
         // TODO Move token to config file
-        const string url = "http://influxdb:8086";
+        const string url = "http://localhost:8086";
         const string token = "mGKNA3ucyOT2rnIuxmGYQAbnrYkBGaT0Piiotl2AFurXVbCl8ExjRok5I9IKI5f94prJziCGSezz7J_JQUGkBg==";
         const string org = "defaultOrg";
 
