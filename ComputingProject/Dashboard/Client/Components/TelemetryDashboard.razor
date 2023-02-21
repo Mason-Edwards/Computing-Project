@@ -38,8 +38,6 @@
 
             ParameterData steeringAngleValue = new ParameterData(data1.ToString(), unixTime);
 
-            string steeringAngleValueJson = JsonSerializer.Serialize(steeringAngleValue);
-
             await Task.Delay(100);
 
             await JSRuntime.InvokeAsync<string>("addData", steeringAngle.Label, steeringAngleValue);
