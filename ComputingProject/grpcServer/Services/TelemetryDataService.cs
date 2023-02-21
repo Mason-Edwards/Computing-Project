@@ -131,7 +131,7 @@ namespace grpcServer.Services
         public override async Task<LoadTelemetryDataReply> LoadTelemetryData(LoadTelemetryDataRequest request, ServerCallContext context) 
         {
             List<Data> datas= new List<Data>();
-            var flux = "from(bucket: \"defaultBucket\") |> range(start: 1676951381, stop: 1676951709)";
+            var flux = $"from(bucket: \"defaultBucket\") |> range(start: {request.Start}, stop: {request.End})";
 
             var fluxTables = await _influxDbClient.GetQueryApi().QueryAsync(flux, org);
             fluxTables.ForEach(fluxTable =>
