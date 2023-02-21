@@ -55,13 +55,15 @@
         else if (NavigationManager.Uri.Contains("telemetryhistoric"))
         {
             <p>Historic</p>
-            <div>
-                <label for="birthdaytime">Start time</label>
-                <input type="datetime-local" id="start-time" name="start-time">
-            </div>
-            <div>
-                <label for="birthdaytime">End time</label>
-                <input type="datetime-local" id="end-time" name="end-time">
+            <div class="date-picker-container">
+                <div>
+                    <label for="birthdaytime">Start time</label>
+                    <input type="datetime-local" id="start-time" name="start-time">
+                </div>
+                <div>
+                    <label for="birthdaytime">End time</label>
+                    <input type="datetime-local" id="end-time" name="end-time">
+                </div>
             </div>
             @if (HostEnvironment.Environment == "Development")
             {

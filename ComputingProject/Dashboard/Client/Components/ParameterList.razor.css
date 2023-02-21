@@ -55,3 +55,8 @@ p {
     vertical-align: middle;
     margin-right: 6px;
 }
+
+.date-picker-container {
+    position: relative;
+    left: 39px;
+}
