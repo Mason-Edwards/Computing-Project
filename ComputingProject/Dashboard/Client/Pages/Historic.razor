@@ -1,4 +1,4 @@
-﻿@page "/telemetrylive"
+﻿@page "/telemetryhistorical"
 @using Dashboard.Client.Adapters;
 @using Google.Protobuf.WellKnownTypes;
 @using Microsoft.Fast.Components.FluentUI
@@ -15,7 +15,7 @@
 
 <PageTitle>Live Telemetry</PageTitle>
 <div class="telemetry-container">
-    <ButtonBanner OnStartClicked="StartClicked" OnStopClicked="StopClicked" OnStartRecordClicked="StartRecordingClicked" OnStopRecordClicked="StopRecordingClicked"/>
+    <ButtonBanner OnLoadDataClicked="LoadDataClicked"/>
     <TelemetryDashboard @ref="dashboard" />
     <ParameterList Connection="connection" Recording="recording" OnAddFakeDataLogs="AddFakeDataLogsClicked" OnClearFakeDataLogs="ClearFakeDataLogsClicked" OnAddFakeDataPoints="AddFakeDataPointsClicked"
        OnClearFakeDataPoints="ClearFakeDataPointsClicked" />
@@ -129,5 +129,31 @@
     public void ClearFakeDataPointsClicked()
     {
         dashboard?.ClearDataPoints();
+    }
+
+    public async Task LoadDataClicked()
+    {
+        // Find out where this logic should live, doing here for now.
+        var start = await JsRuntime.InvokeAsync<string>("GetStartDate");
+        var end = await JsRuntime.InvokeAsync<string>("GetEndDate");
+
+        var startParsed = DateTimeOffset.Parse(start);
+        var startToUnix = startParsed.ToUnixTimeSeconds();
+
+        var endParsed = DateTimeOffset.Parse(end);
+        var endToUnix = endParsed.ToUnixTimeSeconds();
+
+        //
+        // Query data
+        //
+        LoadTelemetryDataReply data = await TelemetryClient.LoadTelemetryDataAsync(new LoadTelemetryDataRequest() { Start = startToUnix, End = endToUnix });
+
+        for (int i = 0; i < data.DataList.Count; i++)
+        {
+            var test = data.DataList.ElementAt(i);
+        }
+        
+
+        Console.WriteLine(start + "|" + end);
     }
 }

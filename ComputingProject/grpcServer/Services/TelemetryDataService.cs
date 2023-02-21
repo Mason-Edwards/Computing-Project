@@ -74,7 +74,7 @@ namespace grpcServer.Services
 
                 if (!valid)
                 {
-                    await responseStream.WriteAsync(new Data { Value = "data not valid" });
+                    //await responseStream.WriteAsync(new Data { Value = "data not valid" });
                     continue;
                 }
 
@@ -83,7 +83,7 @@ namespace grpcServer.Services
                     // Return message (boolean, gRPC status?)
                     Parameter = message.Property("parameter").Value.ToString(),
                     Unit = message.Property("unit").Value.ToString(),
-                    Value = message.Property("value").Value.ToString(),
+                    Value = message.Property("value").Value.ToObject<int>(),
                     Timestamp = message.Property("timestamp").Value.ToString()
                 };
 
@@ -99,7 +99,7 @@ namespace grpcServer.Services
                         // Return message (boolean, gRPC status?)
                         Parameter = test.Property("parameter").Value.ToString(),
                         Unit = test.Property("unit").Value.ToString(),
-                        Value = test.Property("value").Value.ToString(),
+                        Value = test.Property("value").Value.ToObject<int>(),
                         Timestamp = test.Property("timestamp").Value.ToString()
                     };
 
@@ -108,8 +108,8 @@ namespace grpcServer.Services
 
                     // Create data point
                     var point = PointData.Measurement(toSendTest.Parameter)
-                    .Tag("value", toSendTest.Value)
-                    .Field("unit", toSendTest.Unit)
+                    .Tag("unit", toSendTest.Unit)
+                    .Field("value", toSendTest.Value)
                     .Timestamp(DateTime.Parse(toSendTest.Timestamp), WritePrecision.Ns);
 
                     // Write to db
@@ -126,6 +126,29 @@ namespace grpcServer.Services
             record = recordTelemetryMessage.RecordingStatus;
             Console.WriteLine($"CHANGING STATUS TO {record.ToString()}");
             return Task.FromResult(new Empty());
+        }
+
+        public override async Task<LoadTelemetryDataReply> LoadTelemetryData(LoadTelemetryDataRequest request, ServerCallContext context) 
+        {
+            List<Data> datas= new List<Data>();
+            var flux = "from(bucket: \"defaultBucket\") |> range(start: 1676951381, stop: 1676951709)";
+
+            var fluxTables = await _influxDbClient.GetQueryApi().QueryAsync(flux, org);
+            fluxTables.ForEach(fluxTable =>
+            {
+                var fluxRecords = fluxTable.Records;
+                fluxRecords.ForEach(fluxRecord =>
+                {
+                    Console.WriteLine($"{fluxRecord.GetTime()}: {fluxRecord.GetMeasurement()} | {fluxRecord.GetValueByKey("unit")} | {fluxRecord.GetValue()}");
+                    var data = new Data() { Timestamp = fluxRecord.GetTime().ToString(), Parameter = fluxRecord.GetMeasurement(), Unit = fluxRecord.GetValueByKey("unit").ToString(), Value = int.Parse(fluxRecord.GetValue().ToString()) };
+                    datas.Add(data);
+                });
+            });
+
+            LoadTelemetryDataReply test = new LoadTelemetryDataReply();
+            test.DataList.AddRange(datas);
+
+            return test;
         }
     }
 }

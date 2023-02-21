@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Hosting
 
 @inject IWebAssemblyHostEnvironment HostEnvironment
+@inject NavigationManager NavigationManager
 
 
 <fluent-card class="parameter-list">
@@ -9,44 +10,69 @@
     <div class="main-container">
         <h1 class="heading">Control Pannel</h1>
         <fluent-divider></fluent-divider>
-        <p> Status </p>
-        <ul class="list">
-          <li>
-                @if (Connection == ConnectionStatus.Connected)
-                {
-                    <span class="green"> <i class="fa-solid fa-circle green icon"></i> Connected </span>
-                }
-                else if (Connection == ConnectionStatus.Connecting)
-                {
-                    <span class="amber"> <i class="fa-solid fa-circle amber icon"></i>Connecting </span>
-                }
-                else if (Connection == ConnectionStatus.Disconnected)
-                {
-                    <span class="red"> <i class="fa-solid fa-circle red icon"></i>Disconnected </span>
-                }
-          </li>
-          <li>
-                @if (Recording == RecordingStatus.Recording)
-                {
-                    <span class="red"> <i class="fa-solid fa-circle red icon"></i>Recording </span>
-                }
-                else if (Recording == RecordingStatus.NotRecoding)
-                {
-                    <span class="red"> <i class="fa-regular fa-circle red icon"></i>Not Recording </span>
-                }
-          </li>
-        </ul>
-
-        <fluent-divider></fluent-divider>
-        @if(HostEnvironment.Environment == "Development")
+        @if (NavigationManager.Uri.Contains("telemetrylive"))
         {
-            <p>Dev Pannel</p>
-            <div class="dev-button-container">
-                <fluent-button class="buttons" @onclick="OnAddFakeDataPointsClicked">Add fake data points</fluent-button>
-                <fluent-button class="buttons" @onclick="OnAddFakeDataLogsClicked">Add fake data logs</fluent-button>
-                <fluent-button class="buttons" @onclick="OnClearFakeDataPointsClicked">Clear data points</fluent-button>
-                <fluent-button class="buttons" @onclick="OnClearFakeDataLogsClicked">Clear data logs</fluent-button>
+            <p> Status </p>
+            <ul class="list">
+                <li>
+                    @if (Connection == ConnectionStatus.Connected)
+                    {
+                        <span class="green"> <i class="fa-solid fa-circle green icon"></i> Connected </span>
+                    }
+                    else if (Connection == ConnectionStatus.Connecting)
+                    {
+                        <span class="amber"> <i class="fa-solid fa-circle amber icon"></i>Connecting </span>
+                    }
+                    else if (Connection == ConnectionStatus.Disconnected)
+                    {
+                        <span class="red"> <i class="fa-solid fa-circle red icon"></i>Disconnected </span>
+                    }
+                </li>
+                <li>
+                    @if (Recording == RecordingStatus.Recording)
+                    {
+                        <span class="red"> <i class="fa-solid fa-circle red icon"></i>Recording </span>
+                    }
+                    else if (Recording == RecordingStatus.NotRecoding)
+                    {
+                        <span class="red"> <i class="fa-regular fa-circle red icon"></i>Not Recording </span>
+                    }
+                </li>
+            </ul>
+
+            <fluent-divider></fluent-divider>
+            @if (HostEnvironment.Environment == "Development")
+            {
+                <p>Dev Pannel</p>
+                <div class="dev-button-container">
+                    <fluent-button class="buttons" @onclick="OnAddFakeDataPointsClicked">Add fake data points</fluent-button>
+                    <fluent-button class="buttons" @onclick="OnAddFakeDataLogsClicked">Add fake data logs</fluent-button>
+                    <fluent-button class="buttons" @onclick="OnClearFakeDataPointsClicked">Clear data points</fluent-button>
+                    <fluent-button class="buttons" @onclick="OnClearFakeDataLogsClicked">Clear data logs</fluent-button>
+                </div>
+            }
+        }
+        else if (NavigationManager.Uri.Contains("telemetryhistoric"))
+        {
+            <p>Historic</p>
+            <div>
+                <label for="birthdaytime">Start time</label>
+                <input type="datetime-local" id="start-time" name="start-time">
             </div>
+            <div>
+                <label for="birthdaytime">End time</label>
+                <input type="datetime-local" id="end-time" name="end-time">
+            </div>
+            @if (HostEnvironment.Environment == "Development")
+            {
+                <p>Dev Pannel</p>
+                <div class="dev-button-container">
+                    <fluent-button class="buttons" @onclick="OnAddFakeDataPointsClicked">Add fake data points</fluent-button>
+                    <fluent-button class="buttons" @onclick="OnAddFakeDataLogsClicked">Add fake data logs</fluent-button>
+                    <fluent-button class="buttons" @onclick="OnClearFakeDataPointsClicked">Clear data points</fluent-button>
+                    <fluent-button class="buttons" @onclick="OnClearFakeDataLogsClicked">Clear data logs</fluent-button>
+                </div>
+            }
         }
 
     </div>

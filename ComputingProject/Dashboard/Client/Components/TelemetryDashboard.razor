@@ -4,6 +4,7 @@
 
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
 <fluent-card class="telemetry-chart">
     <canvas id="TelemetryChart"></canvas>
@@ -15,7 +16,8 @@
     {
         // Have to invoke the javascript function after the component has been rendered,
         // otherwise the function is called before the DOM element is ready.
-        await JSRuntime.InvokeAsync<string>("DisplayChart");
+        if (NavigationManager.Uri.Contains("telemetrylive")) await JSRuntime.InvokeAsync<string>("DisplayChartLive");
+        else if (NavigationManager.Uri.Contains("telemetryhistorical")) await JSRuntime.InvokeAsync<string>("DisplayChartHistorical");
     }
 
     public async Task AddFakeDataPoints()

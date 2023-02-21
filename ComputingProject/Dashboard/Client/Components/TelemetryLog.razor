@@ -19,11 +19,6 @@
     static Comparer<DateTimeOffset> descendingComparer = Comparer<DateTimeOffset>.Create((x, y) => y.CompareTo(x));
     SortedList<DateTimeOffset, Log> logs = new SortedList<DateTimeOffset, Log>(descendingComparer);
 
-    protected override async void OnInitialized()
-    {
-
-    }
-
     public void addLog(Parameter parameter, string logMessage, DateTimeOffset timestamp)
     {
 

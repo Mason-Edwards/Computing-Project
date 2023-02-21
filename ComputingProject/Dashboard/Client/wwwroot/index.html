@@ -74,7 +74,7 @@
             chart.config.options.scales.x.max = now - 1000;
         }
 
-        function DisplayChart() {
+        function DisplayChartLive() {
             const ctx = document.getElementById('TelemetryChart');
 
             chart = new Chart(ctx, {
@@ -102,8 +102,52 @@
                 }
             });
             chart.options.animation = false;
+        }
+
+        function DisplayChartHistorical() {
+            const ctx = document.getElementById('TelemetryChart');
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'second'
+                            },
+                            displayFormats: {
+                                seconds: 'HH:mm:ss.sss'
+                            },
+                            min: '2021-11-07 00:00:00',
+                            max: '2021-11-07 01:00:00'
+                        },
+                        y: {
+                            beginAtZero: false,
+                            min: -500,
+                            max: 500
+                        }
+                    },
+                }
+            });
+            chart.options.animation = false;
             // Start scrolling the live feed.
-            // setInterval(scroll, 1);
+            //setInterval(scroll, 50);
+        }
+
+        function GetStartDate() {
+            var start = document.querySelector('#start-time').value;
+            return start;
+        }
+
+        function GetEndDate() {
+            var end = document.querySelector('#end-time').value;
+            return end;
         }
     </script>
 </body>

@@ -12,6 +12,7 @@ service TelemetryData {
   // Opens telemetry data stream
   rpc OpenTelemetryStream(google.protobuf.Empty) returns (stream Data);
   rpc RecordTelemetry(RecordTelemetryMessage) returns (google.protobuf.Empty);
+  rpc LoadTelemetryData(LoadTelemetryDataRequest) returns (LoadTelemetryDataReply);
 }
 
 message HelloRequest {
@@ -29,7 +30,7 @@ message Reply {
 message Data {
     string parameter = 1;
     string unit = 2;
-    string value = 3;
+    int32 value = 3;
     string timestamp = 4;
 }
 
@@ -40,4 +41,13 @@ message RecordTelemetryMessage {
 enum GrpcRecordingStatus {
     Recording = 0;
     NotRecoding = 1;
+}
+
+message LoadTelemetryDataRequest {
+    int64 start = 1;
+    int64 end = 2;
+}
+
+message LoadTelemetryDataReply {
+    repeated Data dataList = 1;
 }
