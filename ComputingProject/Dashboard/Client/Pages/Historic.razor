@@ -143,9 +143,6 @@
         var endParsed = DateTimeOffset.Parse(end);
         var endToUnix = endParsed.ToUnixTimeSeconds();
 
-        //
-        // Query data
-        //
         LoadTelemetryDataReply data = await TelemetryClient.LoadTelemetryDataAsync(new LoadTelemetryDataRequest() { Start = startToUnix, End = endToUnix });
 
         for (int i = 0; i < data.DataList.Count; i++)
