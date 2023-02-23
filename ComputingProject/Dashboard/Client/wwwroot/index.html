@@ -65,14 +65,6 @@
             chart.update();
         }
 
-        // Scrolls the live feed automatically.
-        function scroll() {
-            var now = Date.now();
-            // Time is in unix time in milliseconds, so this is setting the chart to the last 10 seconds.
-            // Load and plot data in realtime, but display a second late to try help it look smoother.
-            chart.config.options.scales.x.min = now - 1000 * 10;
-            chart.config.options.scales.x.max = now - 1000;
-        }
 
         function DisplayChartLive() {
             const ctx = document.getElementById('TelemetryChart');
