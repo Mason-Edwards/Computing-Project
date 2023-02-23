@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevCorsPolicy", builder =>
@@ -18,7 +19,6 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
-
 builder.Services
     .AddGrpcClient<TelemetryData.TelemetryDataClient>(options =>
     {
