@@ -1,0 +1,6 @@
+﻿.telemetry-container {
+    display: flex;
+    height: 408px;
+    flex-wrap: wrap;
+    width: 100%
+}

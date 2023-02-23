@@ -1,0 +1,62 @@
+﻿.parameter-list {
+    flex: 0 0 384px;
+    margin-left: 50px;
+    margin-top: 50px
+}
+
+.list {
+    list-style-type: none;
+    position: relative;
+    left: 110px;
+}
+
+.heading {
+    position: relative;
+    left: 60px;
+}
+
+fluent-divider {
+    margin-bottom: 40px;
+}
+
+p {
+    text-align: center;
+    font-size: 1.4em;
+    text-decoration: underline;
+}
+
+.dev-button-container {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    left: 39px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.buttons {
+    flex-basis: 150px;
+}
+
+.green {
+    color: green;
+}
+
+.amber {
+    color: darkorange;
+}
+
+.red {
+    color: red;
+}
+
+.icon {
+    font-size: 0.6em;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.date-picker-container {
+    position: relative;
+    left: 72px;
+}

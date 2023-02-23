@@ -1,0 +1,83 @@
+﻿@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+
+<fluent-card class="button-banner">
+    @if (NavigationManager.Uri.Contains("telemetrylive"))
+    {
+        <div class="button-container">
+            <fluent-button appearance="outline" @onclick="StartClicked"><i class="fa-solid fa-play" slot="start"></i>Start</fluent-button>
+            <fluent-button appearance="outline" @onclick="StopClicked"><i class="fa-solid fa-pause" slot="start"></i>Stop</fluent-button>
+            <fluent-button appearance="outline" @onclick="RestartClicked"><i class="fa-solid fa-rotate-left" slot="start"></i>Restart</fluent-button>
+            <fluent-button appearance="outline" @onclick="StartRecordClicked"><i class="fa-solid fa-clapperboard" slot="start"></i>Record</fluent-button>
+            <fluent-button appearance="outline" @onclick="StopRecordClicked"><i class="fa-solid fa-stop" slot="start"></i>Stop Recording</fluent-button>
+        </div>
+    } else if (NavigationManager.Uri.Contains("telemetryhistoric"))
+    {
+        <div class="button-container">
+            <fluent-button appearance="outline" @onclick="LoadDataClicked"><i class="fa-solid fa-play" slot="start"></i>Load Data</fluent-button>
+            <fluent-button appearance="outline" @onclick="LeftClicked"><i class="fa-solid fa-play" slot="start"></i>Left</fluent-button>
+            <fluent-button appearance="outline" @onclick="RightClicked"><i class="fa-solid fa-play" slot="start"></i>Right</fluent-button>
+        </div>
+    }
+
+</fluent-card>
+
+@code {
+    [Parameter]
+    public EventCallback OnStartClicked { get; set; }
+
+    [Parameter]
+    public EventCallback OnStopClicked { get; set; }
+
+    [Parameter]
+    public EventCallback OnRestartClicked { get; set; }
+
+    [Parameter]
+    public EventCallback OnStartRecordClicked { get; set; }
+
+    [Parameter]
+    public EventCallback OnStopRecordClicked { get; set; }
+
+    [Parameter]
+    public EventCallback OnLoadDataClicked { get; set; }
+
+    public async Task StartClicked()
+    {
+        await OnStartClicked.InvokeAsync();
+    }
+
+    public async Task StopClicked()
+    {
+        await OnStopClicked.InvokeAsync();
+    }
+
+    public async Task RestartClicked()
+    {
+        await OnRestartClicked.InvokeAsync();
+    }
+
+    public async Task StartRecordClicked()
+    {
+        await OnStartRecordClicked.InvokeAsync();
+    }
+
+    public async Task StopRecordClicked()
+    {
+        await OnStopRecordClicked.InvokeAsync();
+    }
+
+    public async Task LoadDataClicked()
+    {
+        await OnLoadDataClicked.InvokeAsync();
+    }
+
+    public async Task LeftClicked()
+    {
+        await JsRuntime.InvokeAsync<string>("scrollLeft");
+    }
+
+    public async Task RightClicked()
+    {
+        await JsRuntime.InvokeAsync<string>("scrollRight");
+    }
+}

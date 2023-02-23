@@ -1,0 +1,14 @@
+﻿@using Dashboard.Shared.Models
+
+<div class="container">
+    <!-- Create divider on left of message that changes color with hover over like on loki logs-->
+    <span class="timestamp">@Log?.Timestamp</span>
+    <span class="parameter">@Log?.Parameter.Label</span>
+    <span class="log">@Log?.LogMessage</span>
+    <br />
+</div>
+
+@code {
+    [Parameter]
+    public Log? Log { get; set; }
+}

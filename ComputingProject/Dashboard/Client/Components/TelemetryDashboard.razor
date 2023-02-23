@@ -1,50 +1,51 @@
-﻿@using Microsoft.Fast.Components.FluentUI
+@using Microsoft.Fast.Components.FluentUI
 @using Dashboard.Shared.Models
 @using System.Text.Json;
 
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
 
-<fluent-card class="main-page">
+<fluent-card class="telemetry-chart">
     <canvas id="TelemetryChart"></canvas>
 </fluent-card>
 
 @code {
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Have to invoke the javascript function after the component has been rendered,
         // otherwise the function is called before the DOM element is ready.
-        await JSRuntime.InvokeAsync<string>("DisplayChart");
+        if (NavigationManager.Uri.Contains("telemetrylive")) await JSRuntime.InvokeAsync<string>("DisplayChartLive");
+        else if (NavigationManager.Uri.Contains("telemetryhistorical")) await JSRuntime.InvokeAsync<string>("DisplayChartHistorical");
+    }
 
+    public async Task AddFakeDataPoints()
+    {
         // Add parameters to chart
         Parameter steeringAngle = new Parameter("Steering Angle (Deg)", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
-        Parameter tyreTemp = new Parameter("Tyre Temp (C)", 1, "rgb(0, 255, 0)", "rgba(0, 255, 0, 1)");
         string steeringAngleJson = JsonSerializer.Serialize(steeringAngle);
-        string tyreTempJson = JsonSerializer.Serialize(tyreTemp);
 
         await JSRuntime.InvokeAsync<string>("addNewParameter", steeringAngleJson);
-        await JSRuntime.InvokeAsync<string>("addNewParameter", tyreTempJson);
 
         // Simulate getting data and adding to chart.
-        for (int i = 0; i < 5000; i++)
+        for (int i = 0; i < 100; i++)
         {
             int data1 = new Random().Next(1, 100);
-            int data2 = new Random().Next(100, 200);
 
             DateTime dateTime = DateTime.Now;
             long unixTime = ((DateTimeOffset)dateTime).ToUnixTimeMilliseconds();
 
             ParameterData steeringAngleValue = new ParameterData(data1.ToString(), unixTime);
-            ParameterData tyreTempValue = new ParameterData(data2.ToString(), unixTime);
 
-            string steeringAngleValueJson = JsonSerializer.Serialize(steeringAngleValue);
-            string tyreTempValueJson = JsonSerializer.Serialize(tyreTempValue);
+            await Task.Delay(100);
 
-            // Need to find best value in combination with chart update interval, chart time range, etc.
-            await Task.Delay(200);
-
-            // await JSRuntime.InvokeAsync<string>("addData", steeringAngle.Label, steeringAngleValue);
-            await JSRuntime.InvokeAsync<string>("addData", tyreTemp.Label, tyreTempValue);
+            await JSRuntime.InvokeAsync<string>("addData", steeringAngle.Label, steeringAngleValue);
         }
+    }
+
+    public async Task ClearDataPoints()
+    {
+        await JSRuntime.InvokeAsync<string>("clearDataPoints");
     }
 }

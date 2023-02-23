@@ -28,8 +28,9 @@
     <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+    <script src="https://kit.fontawesome.com/28e133db25.js" crossorigin="anonymous"></script>
     <script>navigator.serviceWorker.register('service-worker.js');</script>
-    <script> 
+    <script>
         var chart;
 
         function addData(parameter, value) {
@@ -42,6 +43,11 @@
                     dataset.data.push(values);
                 }
             });
+            chart.update();
+        }
+
+        function clearDataPoints() {
+            chart.data = null;
             chart.update();
         }
 
@@ -59,16 +65,8 @@
             chart.update();
         }
 
-        // Scrolls the live feed automatically.
-        function scroll() {
-            var now = Date.now();
-            // Time is in unix time in milliseconds, so this is setting the chart to the last 10 seconds.
-            // Load and plot data in realtime, but display a second late to try help it look smoother.
-            chart.config.options.scales.x.min = now - 1000 * 10;
-            chart.config.options.scales.x.max = now - 1000;
-        }
 
-        function DisplayChart() {
+        function DisplayChartLive() {
             const ctx = document.getElementById('TelemetryChart');
 
             chart = new Chart(ctx, {
@@ -84,20 +82,90 @@
                         },
                         y: {
                             beginAtZero: false,
-                            min: -500,  
+                            min: -500,
                             max: 500
                         }
                     },
                     plugins: {
                         streaming: {
-                            duration: 1000*10
+                            duration: 1000 * 10
                         }
                     },
                 }
             });
             chart.options.animation = false;
+        }
+
+        function DisplayChartHistorical() {
+            const ctx = document.getElementById('TelemetryChart');
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    spanGaps: 1000 * 2,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'second'
+                            },
+                            displayFormats: {
+                                seconds: 'HH:mm:ss.sss'
+                            },
+                        },
+                        y: {
+                            beginAtZero: false,
+                            min: -500,
+                            max: 500
+                        }
+                    },
+                }
+            });
+            chart.options.animation = false;
+            //chart.scales.x.ticks.length = 10;
+            //chart.scales.x.bounds = 'ticks';
+            chart.scales.x.min = 0;
+            chart.scales.x.max = 2;
             // Start scrolling the live feed.
-            // setInterval(scroll, 1);
+            //setInterval(scroll, 50);
+        }
+
+        function scaleChartXAxis() {
+            // Get first data point timestamp
+            let min = chart.data.datasets[0].data[0].x;
+            chart.options.scales.x.min = min;
+            // Change this to be set by user?
+            chart.options.scales.x.max = min + 1000 * 60;
+            chart.update();
+        }
+
+        function scrollLeft() {
+            // Change this to be set by user?
+            chart.options.scales.x.min = chart.options.scales.x.min - 1000 * 10;
+            chart.options.scales.x.max = chart.options.scales.x.max - 1000 * 10;
+            chart.update();
+        }
+
+        function scrollRight() {
+            // Change this to be set by user?
+            chart.options.scales.x.min = chart.options.scales.x.min + 1000 * 10;
+            chart.options.scales.x.max = chart.options.scales.x.max + 1000 * 10;
+            chart.update();
+        }
+
+        function GetStartDate() {
+            var start = document.querySelector('#start-time').value;
+            return start;
+        }
+
+        function GetEndDate() {
+            var end = document.querySelector('#end-time').value;
+            return end;
         }
     </script>
 </body>

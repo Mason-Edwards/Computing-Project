@@ -48,6 +48,8 @@ using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
             // GRPC to dashboard
 
             // This is the gRPC client which will call the methods on the GRPC server and pass the info when it is recieved.
+            
+            // IMPORTATNT: This logic needs to be moved to grpcServer project as the dashboard will be calling the grpc server for the telemetry data.
         }
 
 

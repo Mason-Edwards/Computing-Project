@@ -1,11 +1,18 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 option csharp_namespace = "Dashboard.Shared.GrpcProto";
 
 package TelemetryData;
 
 service TelemetryData {
+  // Test Method
   rpc SayHello (HelloRequest) returns (HelloReply);
+  // Opens telemetry data stream
+  rpc OpenTelemetryStream(google.protobuf.Empty) returns (stream Data);
+  rpc RecordTelemetry(RecordTelemetryMessage) returns (google.protobuf.Empty);
+  rpc LoadTelemetryData(LoadTelemetryDataRequest) returns (LoadTelemetryDataReply);
 }
 
 message HelloRequest {
@@ -14,4 +21,33 @@ message HelloRequest {
 
 message HelloReply {
   string message = 1;
+}
+
+message Reply {
+  string message = 1;
+}
+
+message Data {
+    string parameter = 1;
+    string unit = 2;
+    int32 value = 3;
+    string timestamp = 4;
+}
+
+message RecordTelemetryMessage {
+    GrpcRecordingStatus recordingStatus = 1;
+}
+
+enum GrpcRecordingStatus {
+    Recording = 0;
+    NotRecoding = 1;
+}
+
+message LoadTelemetryDataRequest {
+    int64 start = 1;
+    int64 end = 2;
+}
+
+message LoadTelemetryDataReply {
+    repeated Data dataList = 1;
 }

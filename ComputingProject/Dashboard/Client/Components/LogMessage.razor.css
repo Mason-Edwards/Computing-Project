@@ -1,0 +1,14 @@
+﻿.container {
+    display: flex;
+    flex-wrap: nowrap;
+    border-left: 4px solid #666564;
+    margin-bottom: 3px;
+}
+
+    .container:hover {
+        border-left: 4px solid #949492;
+    }
+
+div > span {
+    margin-right: 40px;
+}
