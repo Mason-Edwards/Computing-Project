@@ -1,4 +1,5 @@
 ﻿@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
 
 <fluent-card class="button-banner">
     @if (NavigationManager.Uri.Contains("telemetrylive"))
@@ -14,6 +15,8 @@
     {
         <div class="button-container">
             <fluent-button appearance="outline" @onclick="LoadDataClicked"><i class="fa-solid fa-play" slot="start"></i>Load Data</fluent-button>
+            <fluent-button appearance="outline" @onclick="LeftClicked"><i class="fa-solid fa-play" slot="start"></i>Left</fluent-button>
+            <fluent-button appearance="outline" @onclick="RightClicked"><i class="fa-solid fa-play" slot="start"></i>Right</fluent-button>
         </div>
     }
 
@@ -66,5 +69,15 @@
     public async Task LoadDataClicked()
     {
         await OnLoadDataClicked.InvokeAsync();
+    }
+
+    public async Task LeftClicked()
+    {
+        await JsRuntime.InvokeAsync<string>("scrollLeft");
+    }
+
+    public async Task RightClicked()
+    {
+        await JsRuntime.InvokeAsync<string>("scrollRight");
     }
 }

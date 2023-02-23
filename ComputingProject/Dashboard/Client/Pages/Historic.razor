@@ -163,5 +163,7 @@
             ParameterData pd = new ParameterData(test.Value.ToString(), DateTimeOffset.Parse(test.Timestamp).ToUnixTimeMilliseconds());
             await JsRuntime.InvokeAsync<string>("addData", test.Parameter, pd);
         }
+
+        await JsRuntime.InvokeAsync<string>("scaleChartXAxis");
     }
 }
