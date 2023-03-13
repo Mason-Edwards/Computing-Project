@@ -105,6 +105,14 @@ services:
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server kafka:9093 --list
       "
+  dashboard:
+    build:
+      context: .
+      dockerfile: ComputingProject\\Dashboard\\Server\\Dockerfile
+    ports:
+      - "49153:443"
+      - "49154:80"
+    container_name: dashboard
   #schema-registry:
   #  image: confluentinc/cp-schema-registry
   #  hostname: schema-registry
