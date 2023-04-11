@@ -40,74 +40,49 @@
 
     // gRPC needs to be removed from server side and its easier to just use it straight from the client.
     // CORS needs to be sorted properly.
-    public async Task StartClicked()
+
+    public async Task LoadDataClicked()
     {
-        try
+        var start = await JsRuntime.InvokeAsync<string>("GetStartDate");
+        var end = await JsRuntime.InvokeAsync<string>("GetEndDate");
+
+        if (start == "" || end == "") 
         {
-            using (stream = TelemetryClient.OpenTelemetryStream(new Empty()))
-            {
-                connection = ConnectionStatus.Connecting;
-                StateHasChanged();
-                await foreach(var response in stream.ResponseStream.ReadAllAsync())
-                {
-                    connection = ConnectionStatus.Connected;
-                    StateHasChanged();
-                    // gRPC server has already ensured the messages are in the right format.
-                    Console.WriteLine($"Parameter: {response.Parameter} | Unit: {response.Unit} | Value: {response.Value} | Timestamp: {response.Timestamp}");
-
-                    // Pass response to Chart Service to have it displayed.
-                    Parameter p = new Parameter(response.Parameter + response.Unit, 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
-                    DateTimeOffset time = DateTimeOffset.Parse(response.Timestamp);
-                    ParameterData pd = new ParameterData(response.Value.ToString(), time.ToUnixTimeMilliseconds());
-
-                    // Handle if its a log message
-                    if (response.Unit.Equals("log"))
-                    {
-
-                        continue;
-                    }
-
-                    // Checking label isnt the best but itll work. Having a HashSet<Parameter> doesnt work with contains as it seems like its checking object references
-                    // insead of the members of the object.
-                    if (!parameters.Contains(p.Label))
-                    {
-                        parameters.Add(p.Label);
-                        await ChartService.AddParameter(JsonSerializer.Serialize(p), JsRuntime);
-                    }
-
-                    // Unlike Parameter, ParameterData doesnt need to be serialised before its passsed into the JS function. This should be more consistent.
-                    await ChartService.AddParameterData(p.Label ,pd, JsRuntime);
-                }
-                connection = ConnectionStatus.Disconnected;
-            }
-        } catch(Grpc.Core.RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
-        {
-            connection = ConnectionStatus.Disconnected;
-            Console.WriteLine("Stream cancelled");
+            await JsRuntime.InvokeVoidAsync("alert", "ERROR: Start or End time not selected!");
+            return;
         }
-        catch (Exception ex) { connection = ConnectionStatus.Disconnected; }
-    }
 
-    public void StopClicked()
-    {
-        connection = ConnectionStatus.Disconnected;
-        stream?.Dispose();
-    }
+        var startParsed = DateTimeOffset.Parse(start);
+        var startToUnix = startParsed.ToUnixTimeSeconds();
 
-    public async Task StartRecordingClicked()
-    {
-        // TODO Dont allow recording if not connected
-        recording = RecordingStatus.Recording;
-        // Try catch, if exception then set recording status back
-        await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
-    }
+        var endParsed = DateTimeOffset.Parse(end);
+        var endToUnix = endParsed.ToUnixTimeSeconds();
 
-    public async Task StopRecordingClicked()
-    {
-        // TODO Dont allow recording if not connected
-        recording = RecordingStatus.NotRecoding;
-        // Try catch, if exception then set recording status back
-        await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
+        if(startToUnix > endToUnix)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "ERROR: End time is before start time!");
+            return;
+        }
+
+        LoadTelemetryDataReply data = await TelemetryClient.LoadTelemetryDataAsync(new LoadTelemetryDataRequest() { Start = startToUnix, End = endToUnix });
+
+        for (int i = 0; i < data.DataList.Count; i++)
+        {
+            var test = data.DataList.ElementAt(i);
+            if (!parameters.Contains(test.Parameter))
+            {
+                Parameter p = new Parameter($"{test.Parameter}", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
+                string pSerialised = JsonSerializer.Serialize(p);
+                parameters.Add(test.Parameter);
+
+                await JsRuntime.InvokeAsync<string>("addNewParameter", pSerialised);
+            }
+
+            ParameterData pd = new ParameterData(test.Value.ToString(), DateTimeOffset.Parse(test.Timestamp).ToUnixTimeMilliseconds());
+            await JsRuntime.InvokeAsync<string>("addData", test.Parameter, pd);
+        }
+
+        await JsRuntime.InvokeAsync<string>("scaleChartXAxis");
     }
 
     public void AddFakeDataLogsClicked()
@@ -129,38 +104,5 @@
     public void ClearFakeDataPointsClicked()
     {
         dashboard?.ClearDataPoints();
-    }
-
-    public async Task LoadDataClicked()
-    {
-        // Find out where this logic should live, doing here for now.
-        var start = await JsRuntime.InvokeAsync<string>("GetStartDate");
-        var end = await JsRuntime.InvokeAsync<string>("GetEndDate");
-
-        var startParsed = DateTimeOffset.Parse(start);
-        var startToUnix = startParsed.ToUnixTimeSeconds();
-
-        var endParsed = DateTimeOffset.Parse(end);
-        var endToUnix = endParsed.ToUnixTimeSeconds();
-
-        LoadTelemetryDataReply data = await TelemetryClient.LoadTelemetryDataAsync(new LoadTelemetryDataRequest() { Start = startToUnix, End = endToUnix });
-
-        for (int i = 0; i < data.DataList.Count; i++)
-        {
-            var test = data.DataList.ElementAt(i);
-            if (!parameters.Contains(test.Parameter))
-            {
-                Parameter p = new Parameter($"{test.Parameter}", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
-                string pSerialised = JsonSerializer.Serialize(p);
-                parameters.Add(test.Parameter);
-
-                await JsRuntime.InvokeAsync<string>("addNewParameter", pSerialised);
-            }
-
-            ParameterData pd = new ParameterData(test.Value.ToString(), DateTimeOffset.Parse(test.Timestamp).ToUnixTimeMilliseconds());
-            await JsRuntime.InvokeAsync<string>("addData", test.Parameter, pd);
-        }
-
-        await JsRuntime.InvokeAsync<string>("scaleChartXAxis");
     }
 }

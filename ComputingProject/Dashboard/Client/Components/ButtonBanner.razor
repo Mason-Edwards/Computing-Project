@@ -14,9 +14,10 @@
     } else if (NavigationManager.Uri.Contains("telemetryhistoric"))
     {
         <div class="button-container">
+            <i class="fa-solid fa-square-left"></i>
             <fluent-button appearance="outline" @onclick="LoadDataClicked"><i class="fa-solid fa-play" slot="start"></i>Load Data</fluent-button>
-            <fluent-button appearance="outline" @onclick="LeftClicked"><i class="fa-solid fa-play" slot="start"></i>Left</fluent-button>
-            <fluent-button appearance="outline" @onclick="RightClicked"><i class="fa-solid fa-play" slot="start"></i>Right</fluent-button>
+            <fluent-button appearance="outline" @onclick="LeftClicked"><i class="fa-solid fa-arrow-left" slot=start></i>Left</fluent-button>
+            <fluent-button appearance="outline" @onclick="RightClicked"><i class="fa-solid fa-arrow-right" slot="start"></i>Right</fluent-button>
         </div>
     }
 
