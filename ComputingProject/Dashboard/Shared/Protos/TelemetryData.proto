@@ -30,7 +30,7 @@ message Reply {
 message Data {
     string parameter = 1;
     string unit = 2;
-    int32 value = 3;
+    string value = 3;
     string timestamp = 4;
 }
 

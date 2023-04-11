@@ -8,6 +8,7 @@ using static Confluent.Kafka.ConfigPropertyNames;
 using InfluxDB.Client;
 using InfluxDB.Client.Api.Domain;
 using InfluxDB.Client.Writes;
+using System.Reactive;
 
 namespace grpcServer.Services
 {
@@ -83,7 +84,7 @@ namespace grpcServer.Services
                     // Return message (boolean, gRPC status?)
                     Parameter = message.Property("parameter").Value.ToString(),
                     Unit = message.Property("unit").Value.ToString(),
-                    Value = message.Property("value").Value.ToObject<int>(),
+                    Value = message.Property("value").Value.ToString(),
                     Timestamp = message.Property("timestamp").Value.ToString()
                 };
 
@@ -99,7 +100,7 @@ namespace grpcServer.Services
                         // Return message (boolean, gRPC status?)
                         Parameter = test.Property("parameter").Value.ToString(),
                         Unit = test.Property("unit").Value.ToString(),
-                        Value = test.Property("value").Value.ToObject<int>(),
+                        Value = test.Property("value").Value.ToString(),
                         Timestamp = test.Property("timestamp").Value.ToString()
                     };
 
@@ -140,7 +141,7 @@ namespace grpcServer.Services
                 fluxRecords.ForEach(fluxRecord =>
                 {
                     Console.WriteLine($"{fluxRecord.GetTime()}: {fluxRecord.GetMeasurement()} | {fluxRecord.GetValueByKey("unit")} | {fluxRecord.GetValue()}");
-                    var data = new Data() { Timestamp = fluxRecord.GetTime().ToString(), Parameter = fluxRecord.GetMeasurement(), Unit = fluxRecord.GetValueByKey("unit").ToString(), Value = int.Parse(fluxRecord.GetValue().ToString()) };
+                    var data = new Data() { Timestamp = fluxRecord.GetTime().ToString(), Parameter = fluxRecord.GetMeasurement(), Unit = fluxRecord.GetValueByKey("unit").ToString(), Value = fluxRecord.GetValue().ToString() };
                     datas.Add(data);
                 });
             });

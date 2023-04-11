@@ -21,7 +21,8 @@
 
     public void addLog(Parameter parameter, string logMessage, DateTimeOffset timestamp)
     {
-
+        logs.Add(timestamp, new Log(parameter, logMessage, timestamp));
+        StateHasChanged();
     }
 
     public async Task addFakeLogs()

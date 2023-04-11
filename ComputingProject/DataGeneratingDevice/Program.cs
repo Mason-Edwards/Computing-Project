@@ -33,7 +33,7 @@ using (var producer = new ProducerBuilder<Null, string>(config).Build())
     for (var i = 0; i < 1000; i++)
     {
         string x = Convert.ToString(new Random().Next(1, 300));
-        string data = $"{{\"parameter\": \"Test parameter\", \"unit\": \"g\", \"value\": \"{x}\", \"timestamp\": \"{new Timestamp(DateTimeOffset.Now).UtcDateTime}\" }}";
+        string data = $"{{\"parameter\": \"Test parameter\", \"unit\": \"g\", \"value\": \"{x}\", \"timestamp\": \"{(DateTimeOffset.Now)}\" }}";
 
         JObject dataToSend = JObject.Parse(data);
 
@@ -46,5 +46,20 @@ using (var producer = new ProducerBuilder<Null, string>(config).Build())
         Console.Out.Flush();
 
         await Task.Delay(1000);
+
+        data = $"{{\"parameter\": \"Test parameter\", \"unit\": \"log\", \"value\": \"This is log test number {i}\", \"timestamp\": \"{(DateTimeOffset.Now)}\" }}";
+
+        dataToSend = JObject.Parse(data);
+
+        valid = dataToSend.IsValid(schemaJson);
+
+        message = dataToSend.ToString();
+
+        result = await producer.ProduceAsync("TelemetryData", new Message<Null, string> { Value = $"{dataToSend.ToString()}", Timestamp = new Timestamp(DateTimeOffset.Now) });
+        Console.WriteLine($"{result.Message.Timestamp.UtcDateTime} : {result.Message.Value}");
+        Console.Out.Flush();
+
+        await Task.Delay(2000);
+
     }
 }
