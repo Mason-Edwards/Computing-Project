@@ -89,29 +89,16 @@ namespace grpcServer.Services
                 };
 
                 if(record == GrpcRecordingStatus.Recording)
-                { 
-                    string x = Convert.ToString(new Random().Next(1, 300));
-                    string data = $"{{\"parameter\": \"Test parameter\", \"unit\": \"g\", \"value\": \"{x}\", \"timestamp\": \"{new Confluent.Kafka.Timestamp(DateTimeOffset.Now).UtcDateTime}\" }}";
+                {
 
-                    JObject test = JObject.Parse(data);
-
-                    Data toSendTest = new Data
-                    {
-                        // Return message (boolean, gRPC status?)
-                        Parameter = test.Property("parameter").Value.ToString(),
-                        Unit = test.Property("unit").Value.ToString(),
-                        Value = test.Property("value").Value.ToString(),
-                        Timestamp = test.Property("timestamp").Value.ToString()
-                    };
-
-                    Console.WriteLine($"WRITING TEST DATA {toSendTest.ToString()}");
+                    Console.WriteLine($"WRITING TEST DATA {toSend.ToString()}");
                     using var writeApi = _influxDbClient.GetWriteApi();
 
                     // Create data point
-                    var point = PointData.Measurement(toSendTest.Parameter)
-                    .Tag("unit", toSendTest.Unit)
-                    .Field("value", toSendTest.Value)
-                    .Timestamp(DateTime.Parse(toSendTest.Timestamp), WritePrecision.Ns);
+                    var point = PointData.Measurement(toSend.Parameter)
+                    .Tag("unit", toSend.Unit)
+                    .Field("value", toSend.Value)
+                    .Timestamp(DateTime.Parse(toSend.Timestamp), WritePrecision.Ns);
 
                     // Write to db
                     // Might need to be done async or something to help performance?

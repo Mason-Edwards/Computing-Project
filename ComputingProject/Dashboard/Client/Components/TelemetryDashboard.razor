@@ -12,6 +12,8 @@
 
 @code {
 
+    private static Random rnd = new Random();
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Have to invoke the javascript function after the component has been rendered,
@@ -23,7 +25,8 @@
     public async Task AddFakeDataPoints()
     {
         // Add parameters to chart
-        Parameter steeringAngle = new Parameter("Steering Angle (Deg)", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
+        var colorString = $"rgb({rnd.Next(256)}, {rnd.Next(256)}, {rnd.Next(256)})";
+        Parameter steeringAngle = new Parameter($"{RandomString(5)} (Deg)", 1, colorString, colorString);
         string steeringAngleJson = JsonSerializer.Serialize(steeringAngle);
 
         await JSRuntime.InvokeAsync<string>("addNewParameter", steeringAngleJson);
@@ -47,5 +50,12 @@
     public async Task ClearDataPoints()
     {
         await JSRuntime.InvokeAsync<string>("clearDataPoints");
+    }
+
+    public static string RandomString(int length)
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[rnd.Next(s.Length)]).ToArray());
     }
 }

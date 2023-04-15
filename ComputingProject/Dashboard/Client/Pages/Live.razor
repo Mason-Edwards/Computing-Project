@@ -32,6 +32,8 @@
     ConnectionStatus connection = ConnectionStatus.Disconnected;
     RecordingStatus recording = RecordingStatus.NotRecoding;
 
+    private Random rnd = new Random();
+
     // Need to clean this code. More consistent types etc. 
     // There is a bug when the stream is stopped and started again, nothing happens and it needs to be started/stopped multiple times for data to start going through
     // again.
@@ -56,7 +58,8 @@
                     Console.WriteLine($"Parameter: {response.Parameter} | Unit: {response.Unit} | Value: {response.Value} | Timestamp: {response.Timestamp}");
 
                     // Pass response to Chart Service to have it displayed.
-                    Parameter p = new Parameter(response.Parameter + " (" + response.Unit + ")", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
+                    var colorString = $"rgb({rnd.Next(256)}, {rnd.Next(256)}, {rnd.Next(256)})";
+                    Parameter p = new Parameter(response.Parameter + " (" + response.Unit + ")", 1, colorString, colorString);
                     DateTimeOffset time = DateTimeOffset.Parse(response.Timestamp);
                     ParameterData pd = new ParameterData(response.Value.ToString(), time.ToUnixTimeMilliseconds());
 
@@ -102,18 +105,14 @@
 
     public async Task StartRecordingClicked()
     {
-        // TODO Dont allow recording if not connected
-        recording = RecordingStatus.Recording;
-        // Try catch, if exception then set recording status back
         await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
+        recording = RecordingStatus.Recording;
     }
 
     public async Task StopRecordingClicked()
     {
-        // TODO Dont allow recording if not connected
-        recording = RecordingStatus.NotRecoding;
-        // Try catch, if exception then set recording status back
         await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
+        recording = RecordingStatus.NotRecoding;
     }
 
     public void AddFakeDataLogsClicked()

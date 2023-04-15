@@ -47,7 +47,7 @@ using (var producer = new ProducerBuilder<Null, string>(config).Build())
 
         await Task.Delay(1000);
 
-        data = $"{{\"parameter\": \"Test parameter\", \"unit\": \"log\", \"value\": \"This is log test number {i}\", \"timestamp\": \"{(DateTimeOffset.Now)}\" }}";
+        data = $"{{\"parameter\": \"Test parameter\", \"unit\": \"log\", \"value\": \"Ping {i}\", \"timestamp\": \"{(DateTimeOffset.Now)}\" }}";
 
         dataToSend = JObject.Parse(data);
 
