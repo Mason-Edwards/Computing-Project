@@ -91,7 +91,7 @@ namespace grpcServer.Services
                 if(record == GrpcRecordingStatus.Recording)
                 {
 
-                    Console.WriteLine($"WRITING TEST DATA {toSend.ToString()}");
+                    Console.WriteLine($"WRITING DATA {toSend.ToString()}");
                     using var writeApi = _influxDbClient.GetWriteApi();
 
                     // Create data point
