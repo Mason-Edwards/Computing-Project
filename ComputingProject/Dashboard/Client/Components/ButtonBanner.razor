@@ -7,7 +7,6 @@
         <div class="button-container">
             <fluent-button appearance="outline" @onclick="StartClicked"><i class="fa-solid fa-play" slot="start"></i>Start</fluent-button>
             <fluent-button appearance="outline" @onclick="StopClicked"><i class="fa-solid fa-pause" slot="start"></i>Stop</fluent-button>
-            <fluent-button appearance="outline" @onclick="RestartClicked"><i class="fa-solid fa-rotate-left" slot="start"></i>Restart</fluent-button>
             <fluent-button appearance="outline" @onclick="StartRecordClicked"><i class="fa-solid fa-clapperboard" slot="start"></i>Record</fluent-button>
             <fluent-button appearance="outline" @onclick="StopRecordClicked"><i class="fa-solid fa-stop" slot="start"></i>Stop Recording</fluent-button>
         </div>
@@ -30,9 +29,6 @@
     public EventCallback OnStopClicked { get; set; }
 
     [Parameter]
-    public EventCallback OnRestartClicked { get; set; }
-
-    [Parameter]
     public EventCallback OnStartRecordClicked { get; set; }
 
     [Parameter]
@@ -49,11 +45,6 @@
     public async Task StopClicked()
     {
         await OnStopClicked.InvokeAsync();
-    }
-
-    public async Task RestartClicked()
-    {
-        await OnRestartClicked.InvokeAsync();
     }
 
     public async Task StartRecordClicked()
