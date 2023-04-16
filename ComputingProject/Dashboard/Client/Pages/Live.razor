@@ -105,14 +105,14 @@
 
     public async Task StartRecordingClicked()
     {
-        await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
         recording = RecordingStatus.Recording;
+        await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
     }
 
     public async Task StopRecordingClicked()
     {
-        await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
         recording = RecordingStatus.NotRecoding;
+        await TelemetryClient.RecordTelemetryAsync(new RecordTelemetryMessage { RecordingStatus = RecordingStatusAdapter.ToGrpcRecordingStatus(recording) });
     }
 
     public void AddFakeDataLogsClicked()
