@@ -16,10 +16,10 @@
 </fluent-card>
 
 @code {
-    static Comparer<long> descendingComparer = Comparer<long>.Create((x, y) => y.CompareTo(x));
-    SortedList<long, Log> logs = new SortedList<long, Log>(descendingComparer);
+    static Comparer<DateTimeOffset> descendingComparer = Comparer<DateTimeOffset>.Create((x, y) => y.CompareTo(x));
+    SortedList<DateTimeOffset, Log> logs = new SortedList<DateTimeOffset, Log>(descendingComparer);
 
-    public void addLog(Parameter parameter, string logMessage, long timestamp)
+    public void addLog(Parameter parameter, string logMessage, DateTimeOffset timestamp)
     {
         logs.Add(timestamp, new Log(parameter, logMessage, timestamp));
         StateHasChanged();

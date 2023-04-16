@@ -56,9 +56,9 @@
                     StateHasChanged();
                     // gRPC server has already ensured the messages are in the right format.
                     Console.WriteLine($"Parameter: {response.Parameter} | Unit: {response.Unit} | Value: {response.Value} | Timestamp: {response.Timestamp}");
-
-                    var time = long.Parse(response.Timestamp);
-
+                    
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(response.Timestamp));
+                    var time = dateTimeOffset.ToUnixTimeMilliseconds();
                     // Pass response to Chart Service to have it displayed.
                     var colorString = $"rgb({rnd.Next(256)}, {rnd.Next(256)}, {rnd.Next(256)})";
                     Parameter p = new Parameter(response.Parameter + " (" + response.Unit + ")", 1, colorString, colorString);
@@ -69,7 +69,7 @@
                     if (response.Unit.Equals("log"))
                     {
                         p.Label = response.Parameter;
-                        log.addLog(p, pd.Value, time);
+                        log.addLog(p, pd.Value, dateTimeOffset);
                         continue;
                     }
 

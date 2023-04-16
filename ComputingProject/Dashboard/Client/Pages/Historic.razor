@@ -67,7 +67,7 @@
                 Parameter p = new Parameter($"{data.Parameter}", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
                 ParameterData paramData = new ParameterData(data.Value.ToString(), DateTimeOffset.Parse(data.Timestamp).ToUnixTimeMilliseconds());
                 //DateTimeOffset time = DateTimeOffset.Parse(data.Timestamp);
-                log.addLog(p, paramData.Value, time);
+                log.addLog(p, paramData.Value, (DateTimeOffset)dateTime);
             }
             if (!parameters.Contains(data.Parameter))
             {
