@@ -4,7 +4,7 @@ namespace Dashboard.Shared.Models
 {
     public class Log
     {
-        public Log(Parameter parameter, string log, DateTimeOffset timestamp)
+        public Log(Parameter parameter, string log, long timestamp)
         {
             Parameter = parameter;
             LogMessage = log;
@@ -15,6 +15,6 @@ namespace Dashboard.Shared.Models
 
         public string LogMessage { get; set; }
             
-        public DateTimeOffset Timestamp { get; set; }
+        public long Timestamp { get; set; }
     }
 }

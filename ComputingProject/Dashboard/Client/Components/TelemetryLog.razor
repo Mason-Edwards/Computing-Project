@@ -16,15 +16,15 @@
 </fluent-card>
 
 @code {
-    static Comparer<DateTimeOffset> descendingComparer = Comparer<DateTimeOffset>.Create((x, y) => y.CompareTo(x));
-    SortedList<DateTimeOffset, Log> logs = new SortedList<DateTimeOffset, Log>(descendingComparer);
+    static Comparer<long> descendingComparer = Comparer<long>.Create((x, y) => y.CompareTo(x));
+    SortedList<long, Log> logs = new SortedList<long, Log>(descendingComparer);
 
-    public void addLog(Parameter parameter, string logMessage, DateTimeOffset timestamp)
+    public void addLog(Parameter parameter, string logMessage, long timestamp)
     {
         logs.Add(timestamp, new Log(parameter, logMessage, timestamp));
         StateHasChanged();
     }
-
+    /*
     public async Task addFakeLogs()
     {
         // Simulate logs being added
@@ -35,7 +35,7 @@
             StateHasChanged();
             await Task.Delay(500);
         }
-    }
+    }*/
 
     public void clearLogs()
     {

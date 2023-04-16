@@ -71,21 +71,20 @@ namespace grpcServer.Services
                 // Convert message to JSON
                 JObject message = JObject.Parse(consumeResult.Message.Value);
                 // Validate message using JSON schema
-                bool valid = message.IsValid(schemaJson);
+                //bool valid = message.IsValid(schemaJson);
 
-                if (!valid)
-                {
+                //if (!valid)
+                //{
                     //await responseStream.WriteAsync(new Data { Value = "data not valid" });
-                    continue;
-                }
-
+                    //continue;
+               //}
                 Data toSend = new Data
                 {
                     // Return message (boolean, gRPC status?)
                     Parameter = message.Property("parameter").Value.ToString(),
                     Unit = message.Property("unit").Value.ToString(),
                     Value = message.Property("value").Value.ToString(),
-                    Timestamp = message.Property("timestamp").Value.ToString()
+                    Timestamp = consumeResult.Message.Timestamp.UnixTimestampMs.ToString(),
                 };
 
                 if(record == GrpcRecordingStatus.Recording)
@@ -94,11 +93,13 @@ namespace grpcServer.Services
                     Console.WriteLine($"WRITING DATA {toSend.ToString()}");
                     using var writeApi = _influxDbClient.GetWriteApi();
 
+                    var datetime = DateTimeOffset.FromUnixTimeMilliseconds(consumeResult.Message.Timestamp.UnixTimestampMs);
+
                     // Create data point
                     var point = PointData.Measurement(toSend.Parameter)
                     .Tag("unit", toSend.Unit)
                     .Field("value", toSend.Value)
-                    .Timestamp(DateTime.Parse(toSend.Timestamp), WritePrecision.Ns);
+                    .Timestamp(datetime.UtcDateTime, WritePrecision.Ns);
 
                     // Write to db
                     // Might need to be done async or something to help performance?

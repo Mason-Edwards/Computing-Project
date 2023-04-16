@@ -46,10 +46,10 @@
     {
         try
         {
+            connection = ConnectionStatus.Connecting;
+            StateHasChanged();
             using (stream = TelemetryClient.OpenTelemetryStream(new Empty()))
             {
-                connection = ConnectionStatus.Connecting;
-                StateHasChanged();
                 await foreach(var response in stream.ResponseStream.ReadAllAsync())
                 {
                     connection = ConnectionStatus.Connected;
@@ -57,11 +57,13 @@
                     // gRPC server has already ensured the messages are in the right format.
                     Console.WriteLine($"Parameter: {response.Parameter} | Unit: {response.Unit} | Value: {response.Value} | Timestamp: {response.Timestamp}");
 
+                    var time = long.Parse(response.Timestamp);
+
                     // Pass response to Chart Service to have it displayed.
                     var colorString = $"rgb({rnd.Next(256)}, {rnd.Next(256)}, {rnd.Next(256)})";
                     Parameter p = new Parameter(response.Parameter + " (" + response.Unit + ")", 1, colorString, colorString);
-                    DateTimeOffset time = DateTimeOffset.Parse(response.Timestamp);
-                    ParameterData pd = new ParameterData(response.Value.ToString(), time.ToUnixTimeMilliseconds());
+                    //DateTimeOffset time = DateTimeOffset.Parse(response.Timestamp);
+                    ParameterData pd = new ParameterData(response.Value.ToString(), time);
 
                     // Handle if its a log message
                     if (response.Unit.Equals("log"))
@@ -117,7 +119,7 @@
 
     public void AddFakeDataLogsClicked()
     {
-        log?.addFakeLogs();
+        //log?.addFakeLogs();
     }
 
     public void ClearFakeDataLogsClicked()

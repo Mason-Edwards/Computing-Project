@@ -60,11 +60,13 @@
         for (int i = 0; i < loadedData.DataList.Count; i++)
         {
             var data = loadedData.DataList.ElementAt(i);
+            var dateTime = DateTime.Parse(data.Timestamp);
+            var time = ((DateTimeOffset)dateTime).ToUnixTimeMilliseconds();
             if (data.Unit.Equals("log"))
             {
                 Parameter p = new Parameter($"{data.Parameter}", 1, "rgb(255, 0, 0)", "rgba(255, 0, 0, 1)");
                 ParameterData paramData = new ParameterData(data.Value.ToString(), DateTimeOffset.Parse(data.Timestamp).ToUnixTimeMilliseconds());
-                DateTimeOffset time = DateTimeOffset.Parse(data.Timestamp);
+                //DateTimeOffset time = DateTimeOffset.Parse(data.Timestamp);
                 log.addLog(p, paramData.Value, time);
             }
             if (!parameters.Contains(data.Parameter))
@@ -85,7 +87,7 @@
 
     public void AddFakeDataLogsClicked()
     {
-        log?.addFakeLogs();
+        //log?.addFakeLogs();
     }
 
     public void ClearFakeDataLogsClicked()
